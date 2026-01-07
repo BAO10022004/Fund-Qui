@@ -4,25 +4,29 @@ import '../assets/fillter.css';
 interface FilterProps {
   searchQuery: string;
   setSearchQuery: (value: string) => void;
-  timeFilter: string;
-  setTimeFilter: (value: string) => void;
   personFilter: string;
   setPersonFilter: (value: string) => void;
   statusFilter: string;
   setStatusFilter: (value: string) => void;
   persons: Person[];
+  startDate?: string;
+  setStartDate?: (value: string) => void;
+  endDate?: string;
+  setEndDate?: (value: string) => void;
 }
 
 function Fillter({ 
   searchQuery, 
   setSearchQuery, 
-  timeFilter, 
-  setTimeFilter, 
   personFilter, 
   setPersonFilter, 
   statusFilter, 
   setStatusFilter, 
-  persons 
+  persons,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate
 }: FilterProps) {
   return (
     <div className="filters-container">
@@ -51,13 +55,25 @@ function Fillter({
 
       {/* Các bộ lọc ở dưới */}
       <div className="filters-row">
-        <div className="filter-group">
-          <label>⏰ Khoảng thời gian</label>
-          <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)}>
-            <option value="all">Tất cả</option>
-            <option value="week">7 ngày qua</option>
-            <option value="month">Tháng này</option>
-          </select>
+        <div className="filter-group date-range-group">
+          <label>📅 Khoảng thời gian</label>
+          <div className="date-range-inputs">
+            <input
+              type="date"
+              value={startDate || ''}
+              onChange={e => setStartDate?.(e.target.value)}
+              className="date-input-filter"
+              placeholder="Từ ngày"
+            />
+            <span className="date-separator">→</span>
+            <input
+              type="date"
+              value={endDate || ''}
+              onChange={e => setEndDate?.(e.target.value)}
+              className="date-input-filter"
+              placeholder="Đến ngày"
+            />
+          </div>
         </div>
 
         <div className="filter-group">
@@ -82,16 +98,17 @@ function Fillter({
         </div>
 
         {/* Hiển thị bộ lọc đang áp dụng */}
-        {(timeFilter !== 'all' || personFilter !== 'all' || statusFilter !== 'all' || searchQuery) && (
+        {(startDate || endDate || personFilter !== 'all' || statusFilter !== 'all' || searchQuery) && (
           <div className="filter-group">
             <label>&nbsp;</label>
             <button 
               className="btn-reset-filter"
               onClick={() => {
-                setTimeFilter('all');
                 setPersonFilter('all');
                 setStatusFilter('all');
                 setSearchQuery('');
+                setStartDate?.('');
+                setEndDate?.('');
               }}
             >
               🔄 Xóa bộ lọc
@@ -101,13 +118,16 @@ function Fillter({
       </div>
 
       {/* Hiển thị các bộ lọc đang active */}
-      {(timeFilter !== 'all' || personFilter !== 'all' || statusFilter !== 'all') && (
+      {((startDate && endDate) || personFilter !== 'all' || statusFilter !== 'all') && (
         <div className="active-filters">
           <span className="active-filters-label">Đang lọc:</span>
-          {timeFilter !== 'all' && (
+          {startDate && endDate && (
             <span className="filter-tag">
-              ⏰ {timeFilter === 'week' ? '7 ngày qua' : 'Tháng này'}
-              <button onClick={() => setTimeFilter('all')}>✕</button>
+              📅 {new Date(startDate).toLocaleDateString('vi-VN')} → {new Date(endDate).toLocaleDateString('vi-VN')}
+              <button onClick={() => {
+                setStartDate?.('');
+                setEndDate?.('');
+              }}>✕</button>
             </span>
           )}
           {personFilter !== 'all' && (

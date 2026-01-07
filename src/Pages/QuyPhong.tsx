@@ -34,10 +34,11 @@ const QuyPhong: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalStep, setModalStep] = useState(1);
-  const [timeFilter, setTimeFilter] = useState('all');  
   const [personFilter, setPersonFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
@@ -154,23 +155,14 @@ const QuyPhong: React.FC = () => {
   const getFilteredTransactions = (): Transaction[] => {
     let filtered = [...transactions];
 
-    if (timeFilter !== 'all') {
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
+    // Lọc theo khoảng thời gian
+    if (startDate && endDate) {
       filtered = filtered.filter(t => {
         const transDate = new Date(t.date);
-        if (timeFilter === 'week') {
-          const weekAgo = new Date(today);
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          return transDate >= weekAgo;
-        } else if (timeFilter === 'month') {
-          return (
-            transDate.getMonth() === now.getMonth() &&
-            transDate.getFullYear() === now.getFullYear()
-          );
-        }
-        return true;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999); // Bao gồm cả ngày kết thúc
+        return transDate >= start && transDate <= end;
       });
     }
 
@@ -238,14 +230,16 @@ const QuyPhong: React.FC = () => {
 
       <Fillter
         persons={persons}
-        timeFilter={timeFilter}
-        setTimeFilter={setTimeFilter}
         personFilter={personFilter}
         setPersonFilter={setPersonFilter}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
       />
       
       {loading && (

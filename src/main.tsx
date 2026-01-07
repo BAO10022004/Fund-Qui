@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import QuyPhong from './Pages/QuyPhong';
 import ManagePersons from './Pages/ManagePersons';
-
+import AdminLayout from './Pages/AdminLayout';
+import ManageTransactions from './Pages/ManageTransaction';
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
@@ -15,7 +16,9 @@ ReactDOM.createRoot(rootElement).render(
     <HashRouter>
       <Routes>
         <Route path="/" element={<QuyPhong />} />
-        <Route path="/admin" element={<ManagePersons />} />
+        <Route path="/admin" element={<AdminLayout />} />
+        <Route path="/admin/persons" element={<ManagePersons />} />
+        <Route path="/admin/transactions" element={<ManageTransactions />} />
       </Routes>
     </HashRouter>
   </React.StrictMode>
