@@ -1,0 +1,33 @@
+mutation CreateMood @auth(level: USER) {
+  mood_insert(data: {
+    name: "Happy",
+    createdAt_expr: "request.time"
+  })
+}
+
+query ListJournalEntries @auth(level: USER) {
+  journalEntries {
+    id
+    title
+    content
+    entryDate
+  }
+}
+
+mutation CreateJournalEntry($title: String!, $content: String!, $entryDate: Timestamp!) @auth(level: USER) {
+  journalEntry_insert(data: {
+    title: $title,
+    content: $content,
+    entryDate: $entryDate,
+    createdAt_expr: "request.time",
+    userId_expr: "auth.uid"
+  })
+}
+
+query GetUser @auth(level: USER) {
+  user(key: {id_expr: "auth.uid"}) {
+    id
+    username
+    email
+  }
+}

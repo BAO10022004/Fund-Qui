@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1704614400000,
+    "date": "2025-01-07",
+    "dayOfWeek": "Thứ 3",
+    "amount": 50000,
+    "type": "chi",
+    "description": "Đi trễ",
+    "personId": "32812",
+    "personName": "Nguyễn Thị Minh Xuân - 32812",
+    "status": "pending"
+  }
+]

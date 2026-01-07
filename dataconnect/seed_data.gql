@@ -1,0 +1,70 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  user_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      username: "demouser1",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      username: "demouser2",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+  mood_insertMany(data: [
+    {
+      id: "a1a1a1a1-b2b2-c3c3-d4d4-e5e5e5e5e5e5",
+      name: "Happy",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "b1b1b1b1-c2c2-d3d3-e4e4-f5f5f5f5f5f5",
+      name: "Sad",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+  tag_insertMany(data: [
+    {
+      id: "c1c1c1c1-d2d2-e3e3-f4f4-a5a5a5a5a5a5",
+      name: "Work",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "d1d1d1d1-e2e2-f3f3-a4a4-b5b5b5b5b5b5",
+      name: "Personal",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+  journalEntry_insertMany(data: [
+    {
+      id: "123e4567-e89b-12d3-a456-426614174000",
+      userId: "550e8400-e29b-41d4-a716-446655440000",
+      content: "Today was a good day.",
+      createdAt: "2024-04-26T12:00:00Z",
+      entryDate: "2024-04-26T00:00:00Z",
+      title: "Good Day"
+    },
+    {
+      id: "888e4567-e89b-12d3-a456-426614174888",
+      userId: "550e8400-e29b-41d4-a716-446655440001",
+      content: "Today was a bad day.",
+      createdAt: "2024-04-26T12:00:00Z",
+      entryDate: "2024-04-26T00:00:00Z",
+      title: "Bad Day"
+    }
+  ])
+  entryMood_insertMany(data: [
+    {
+      journalEntryId: "123e4567-e89b-12d3-a456-426614174000",
+      moodId: "a1a1a1a1-b2b2-c3c3-d4d4-e5e5e5e5e5e5",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+   entryTag_insertMany(data: [
+    {
+      journalEntryId: "123e4567-e89b-12d3-a456-426614174000",
+      tagId: "c1c1c1c1-d2d2-e3e3-f4f4-a5a5a5a5a5a5",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+}

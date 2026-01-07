@@ -1,0 +1,37 @@
+type User @table {
+  username: String!
+  createdAt: Timestamp!
+  email: String
+  lastLogin: Timestamp
+}
+
+type JournalEntry @table {
+  user: User!
+  title: String!
+  content: String!
+  entryDate: Timestamp!
+  createdAt: Timestamp!
+  updatedAt: Timestamp
+}
+
+type Tag @table {
+  name: String!
+  createdAt: Timestamp!
+}
+
+type Mood @table {
+  name: String!
+  createdAt: Timestamp!
+}
+
+type EntryTag @table(key: ["journalEntry", "tag"]) {
+  journalEntry: JournalEntry!
+  tag: Tag!
+  createdAt: Timestamp!
+}
+
+type EntryMood @table(key: ["journalEntry", "mood"]) {
+  journalEntry: JournalEntry!
+  mood: Mood!
+  createdAt: Timestamp!
+}

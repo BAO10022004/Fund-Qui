@@ -1,0 +1,25 @@
+{
+  "persons": [
+    {
+      "id": "32812",
+      "name": "Nguyễn Thị Minh Xuân",
+      "code": "32812"
+    },
+    {
+      "id": "33691",
+      "name": "Nguyễn Thị Mỹ Duyên",
+      "code": "33691"
+    },
+    {
+      "id": "36329",
+      "name": "Trần Tuyết Mai",
+      "code": "36329"
+    },
+    {
+      "id": "35808",
+      "name": "Ôn Gia Bảo",
+      "code": "35808"
+    }
+  ],
+  "transactions": []
+}
