@@ -186,7 +186,8 @@ const QuyPhong: React.FC = () => {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(t => 
         t.description.toLowerCase().includes(query) ||
-        t.personName.toLowerCase().includes(query)
+        t.personName.toLowerCase().includes(query) ||
+        t.amount.toString().includes(query)
       );
     }
 
