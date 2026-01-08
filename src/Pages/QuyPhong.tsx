@@ -21,10 +21,8 @@ const COMMON_DESCRIPTIONS = {
     'Vi phạm nội quy'
   ],
   thu: [
-    'Đóng quỹ tháng',
-    'Tiền phạt',
-    'Hoàn trả',
-    'Tài trợ'
+    'Đóng quỹ tháng này',
+    'Đi ăn'
   ]
 };
 

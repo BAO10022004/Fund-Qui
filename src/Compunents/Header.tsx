@@ -18,9 +18,9 @@ function Header({stats, setShowModal}: {
     <div className="header">
       <div className="header-top">
         <h1>💰 Quản Lý Quỹ Phòng</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        {/* <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           ➕ Thêm giao dịch
-        </button>
+        </button> */}
       </div>
 
       <div className="stats">
