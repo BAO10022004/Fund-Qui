@@ -829,34 +829,336 @@ tbody tr:hover .badge {
    RESPONSIVE DESIGN
    ============================================ */
 
-@media (max-width: 768px) {
+/* Tablet - 1024px và nhỏ hơn */
+@media (max-width: 1024px) {
+  body {
+    padding: 15px;
+  }
+
+  .container {
+    max-width: 100%;
+  }
+
+  .header {
+    padding: 30px 25px;
+  }
+
   .header h1 {
-    font-size: 32px;
+    font-size: 36px;
+  }
+
+  .header h1::after {
+    display: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .stat-card {
+    padding: 20px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  thead th,
+  tbody td {
+    padding: 15px 12px;
+  }
+}
+
+/* Mobile - 768px và nhỏ hơn */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .header {
+    padding: 25px 20px;
+    border-radius: 16px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
   }
   
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 18px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .btn-add {
+    padding: 14px 30px;
+    font-size: 14px;
   }
   
+  .filters {
+    padding: 20px 15px;
+    border-radius: 16px;
+  }
+
   .filter-row {
     grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .filter-group label {
+    font-size: 12px;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .transactions {
+    padding: 20px 15px;
+    border-radius: 16px;
+  }
+
+  /* Table scroll horizontal trên mobile */
+  .transactions {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 700px;
+    font-size: 13px;
+  }
+  
+  thead th {
+    padding: 14px 10px;
+    font-size: 12px;
+  }
+
+  tbody td {
+    padding: 14px 10px;
+    font-size: 13px;
+  }
+
+  .day-of-week {
+    font-size: 10px;
+  }
+
+  .date-text {
+    font-size: 12px;
+  }
+
+  .amount {
+    font-size: 15px;
+    padding: 6px 12px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  /* Modal responsive */
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-content {
+    padding: 25px 20px;
+    border-radius: 20px;
+  }
+
+  .modal-header h2 {
+    font-size: 24px;
+  }
+
+  .btn-back {
+    font-size: 12px;
+    padding: 8px 16px;
   }
   
   .type-selection {
     grid-template-columns: 1fr;
+    gap: 15px;
   }
-  
-  table {
+
+  .type-btn {
+    padding: 30px 20px;
+  }
+
+  .type-icon {
+    font-size: 48px;
+  }
+
+  .type-label {
+    font-size: 24px;
+  }
+
+  .type-desc {
+    font-size: 12px;
+  }
+
+  .form-group label {
     font-size: 13px;
   }
-  
-  thead th,
-  tbody td {
-    padding: 12px 10px;
+
+  .form-group input,
+  .form-group select {
+    padding: 12px 14px;
+    font-size: 14px;
   }
-  
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
+
+/* Mobile nhỏ - 480px và nhỏ hơn */
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+
+  .header {
+    padding: 20px 15px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .btn-add {
+    padding: 12px 24px;
+    font-size: 13px;
+  }
+
+  .filters {
+    padding: 15px;
+  }
+
+  .transactions {
+    padding: 15px;
+  }
+
+  table {
+    min-width: 650px;
+    font-size: 12px;
+  }
+
+  thead th {
+    padding: 12px 8px;
+    font-size: 11px;
+  }
+
+  tbody td {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
   .modal-content {
-    padding: 25px;
+    padding: 20px 15px;
+  }
+
+  .modal-header h2 {
+    font-size: 20px;
+  }
+
+  .type-btn {
+    padding: 25px 15px;
+  }
+
+  .type-icon {
+    font-size: 40px;
+  }
+
+  .type-label {
+    font-size: 20px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .header {
+    padding: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal-content {
+    max-height: 85vh;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+  }
+
+  body::before {
+    display: none;
+  }
+
+  .header,
+  .filters,
+  .transactions {
+    box-shadow: none;
+    background: white;
+  }
+
+  .btn-add,
+  .filter-row {
+    display: none;
+  }
+
+  table {
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tbody tr {
+    page-break-inside: avoid;
   }
 }
 
