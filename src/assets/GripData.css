@@ -1,0 +1,470 @@
+/* ==================== TRANSACTIONS CONTAINER ==================== */
+.transactions {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: fadeIn 0.6s ease-out;
+  margin-bottom: 20px;
+}
+
+/* ==================== HEADER INFO ==================== */
+.transactions > div:first-child {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.transactions > div:first-child > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.transactions > div:first-child strong {
+  color: white;
+  font-size: 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.transactions > div:first-child div {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ==================== TABLE STYLES ==================== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  animation: fadeIn 0.8s ease-out;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* ==================== TABLE HEADER ==================== */
+thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+thead tr {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+th {
+  padding: 18px 15px;
+  text-align: left;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+th::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+th:hover::after {
+  width: 100%;
+}
+
+th:first-child {
+  border-top-left-radius: 12px;
+  padding-left: 20px;
+}
+
+th:last-child {
+  border-top-right-radius: 12px;
+  padding-right: 20px;
+}
+
+/* ==================== TABLE BODY ==================== */
+tbody tr {
+  background: white;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out backwards;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(102, 126, 234, 0.02);
+}
+
+tbody tr:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  z-index: 1;
+}
+
+/* Stagger animation for rows */
+tbody tr:nth-child(1) { animation-delay: 0.1s; }
+tbody tr:nth-child(2) { animation-delay: 0.15s; }
+tbody tr:nth-child(3) { animation-delay: 0.2s; }
+tbody tr:nth-child(4) { animation-delay: 0.25s; }
+tbody tr:nth-child(5) { animation-delay: 0.3s; }
+
+td {
+  padding: 16px 15px;
+  color: #333;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+td:first-child {
+  padding-left: 20px;
+  font-weight: 500;
+}
+
+td:last-child {
+  padding-right: 20px;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* ==================== DATE INFO ==================== */
+.date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-of-week {
+  font-size: 11px;
+  color: #667eea;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.date-text {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ==================== AMOUNT STYLES ==================== */
+.amount {
+  font-weight: 700;
+  font-size: 15px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.amount.positive {
+  color: #00b894;
+  background: linear-gradient(135deg, rgba(85, 239, 196, 0.15) 0%, rgba(0, 184, 148, 0.15) 100%);
+  border: 1px solid rgba(0, 184, 148, 0.3);
+}
+
+.amount.negative {
+  color: #d63031;
+  background: linear-gradient(135deg, rgba(255, 118, 117, 0.15) 0%, rgba(214, 48, 49, 0.15) 100%);
+  border: 1px solid rgba(214, 48, 49, 0.3);
+}
+
+.amount:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== BADGE STYLES ==================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  border: 2px solid transparent;
+}
+
+/* Income badge */
+.badge.income {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  color: white;
+  box-shadow: 0 4px 10px rgba(9, 132, 227, 0.3);
+}
+
+.badge.income:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(9, 132, 227, 0.4);
+}
+
+/* Expense badge */
+.badge.expense {
+  background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+  color: white;
+  box-shadow: 0 4px 10px rgba(214, 48, 49, 0.3);
+}
+
+.badge.expense:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(214, 48, 49, 0.4);
+}
+
+/* Completed status badge */
+.badge.completed {
+  background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);
+}
+
+.badge.completed:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 184, 148, 0.4);
+}
+
+/* Pending status badge */
+.badge.pending {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  color: #d63031;
+  box-shadow: 0 4px 10px rgba(253, 203, 110, 0.3);
+}
+
+.badge.pending:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(253, 203, 110, 0.4);
+}
+
+/* ==================== EMPTY STATE ==================== */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px !important;
+  font-size: 16px;
+  color: #999;
+  font-weight: 500;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  position: relative;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 1024px) {
+  .transactions {
+    padding: 20px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  th, td {
+    padding: 12px 10px;
+  }
+
+  th:first-child, td:first-child {
+    padding-left: 15px;
+  }
+
+  th:last-child, td:last-child {
+    padding-right: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .transactions {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  /* Stack table for mobile */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody {
+    display: block;
+  }
+
+  tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  tbody tr:hover {
+    transform: scale(1);
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #667eea;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .date-info {
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .amount, .badge {
+    margin-left: auto;
+  }
+
+  .empty-state {
+    padding: 60px 15px !important;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .transactions > div:first-child {
+    padding: 12px;
+  }
+
+  .transactions > div:first-child strong {
+    font-size: 14px;
+  }
+
+  .badge {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .amount {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+tbody tr:focus-within {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.badge:focus,
+.amount:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}

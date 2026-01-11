@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, type JSX } from 'react';
-import type { Person } from '../services/firestoreService';
+import type { Person } from '../models/Person';
 import '../assets/fillter.css';
 
 interface FilterProps {
@@ -276,60 +276,7 @@ function Filter({
             <option value="completed">Đã thu</option>
           </select>
         </div>
-
-        {/* Nút xóa bộ lọc */}
-        {(startDate || endDate || personFilter !== 'all' || statusFilter !== 'all' || searchQuery) && (
-          <div className="filter-group">
-            <label>&nbsp;</label>
-            <button
-              className="btn-reset-filter"
-              onClick={() => {
-                setPersonFilter('all');
-                setStatusFilter('all');
-                setSearchQuery('');
-                setStartDate?.('');
-                setEndDate?.('');
-              }}
-              type="button"
-            >
-              🔄 Xóa bộ lọc
-            </button>
-          </div>
-        )}
       </div>
-
-      {/* Hiển thị các bộ lọc đang active */}
-      {((startDate && endDate) || personFilter !== 'all' || statusFilter !== 'all') && (
-        <div className="active-filters">
-          <span className="active-filters-label">Đang lọc:</span>
-          {startDate && endDate && (
-            <span className="filter-tag">
-              📅 {new Date(startDate).toLocaleDateString('vi-VN')} → {new Date(endDate).toLocaleDateString('vi-VN')}
-              <button 
-                onClick={() => {
-                  setStartDate?.('');
-                  setEndDate?.('');
-                }}
-                type="button"
-              >
-                ✕
-              </button>
-            </span>
-          )}
-          {personFilter !== 'all' && (
-            <span className="filter-tag">
-              👤 {persons.find(p => p.id === personFilter)?.name}
-              <button onClick={() => setPersonFilter('all')} type="button">✕</button>
-            </span>
-          )}
-          {statusFilter !== 'all' && (
-            <span className="filter-tag">
-              📊 {statusFilter === 'pending' ? 'Chưa thu' : 'Đã thu'}
-              <button onClick={() => setStatusFilter('all')} type="button">✕</button>
-            </span>
-          )}
-        </div>
-      )}
     </div>
   );
 }

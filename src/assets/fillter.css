@@ -1,158 +1,154 @@
-/* ============================================
-   FILTERS CONTAINER
-   ============================================ */
-
+/* Container chính */
 .filters-container {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 30px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-  animation: slideInRight 0.6s ease-out;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ============================================
-   SEARCH BAR MAIN (Ở TRÊN)
-   ============================================ */
-
+/* ===== THANH TÌM KIẾM CHÍNH (Hàng 1) ===== */
 .search-bar-main {
-  margin-bottom: 25px;
+  width: 100%;
 }
 
 .search-input-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 4px 4px 4px 20px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.search-input-wrapper:focus-within {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15), 0 8px 20px rgba(37, 99, 235, 0.1);
-  transform: translateY(-2px);
-}
-
-.search-icon {
-  font-size: 22px;
-  margin-right: 12px;
-  color: #6b7280;
-  transition: all 0.3s ease;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.search-input-wrapper:focus-within .search-icon {
-  color: #2563eb;
-  transform: scale(1.15);
-  animation: none;
+  width: 100%;
 }
 
 .search-input-main {
-  flex: 1;
-  border: none;
+  width: 100%;
+  padding: 14px 45px 14px 45px;
+  font-size: 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 30px;
   outline: none;
-  padding: 16px 12px;
-  font-size: 16px;
-  color: #333;
-  background: transparent;
-  font-weight: 500;
+  transition: all 0.2s;
+  background-color: white;
 }
 
-.search-input-main::placeholder {
-  color: #9ca3af;
-  font-weight: 400;
+.search-input-main:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #6b7280;
+  pointer-events: none;
 }
 
 .clear-search {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
   border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
   font-size: 18px;
   cursor: pointer;
+  color: #9ca3af;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  margin-right: 4px;
-  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+  transition: color 0.2s;
+  border-radius: 50%;
 }
 
 .clear-search:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  background-color: #fee2e2;
 }
 
-.clear-search:active {
-  transform: rotate(90deg) scale(0.95);
-}
-
-/* ============================================
-   FILTERS ROW (Ở DƯỚI)
-   ============================================ */
-
+/* ===== HÀNG CÁC BỘ LỌC - Grid để tạo 2 hàng ===== */
 .filters-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr auto;
-  gap: 20px;
-  align-items: end;
+  gap: 12px;
+  align-items: start;
 }
 
+/* Filter group - mỗi group chiếm 1 ô trong grid */
 .filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: contents; /* Quan trọng: cho phép label và input tách thành 2 ô grid riêng */
 }
 
+/* Tất cả labels nằm trên cùng 1 hàng */
 .filter-group label {
-  font-weight: 700;
-  color: #1e40af;
   font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: #4b5563;
+  white-space: nowrap;
+  padding-bottom: 4px;
+  grid-row: 1; /* Hàng 1: labels */
+}
+
+/* Tất cả inputs/selects nằm ở hàng 2 */
+.filter-group > :not(label) {
+  grid-row: 2; /* Hàng 2: inputs */
+}
+
+/* Styles cho select */
+.filter-group select {
+  width: 100%;
+  padding: 12px 36px 12px 14px;
+  font-size: 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 25px;
+  outline: none;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%236b7280' d='M7 9L3 5h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  font-weight: 500;
+  height: 46px;
+}
+
+.filter-group select:hover {
+  border-color: #9ca3af;
+}
+
+.filter-group select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ===== NÚT XÓA BỘ LỌC (Nút đỏ) ===== */
+.btn-reset-filter {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background-color: #ef4444;
+  border: 2px solid #ef4444;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  height: 46px;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all 0.3s ease;
+  grid-row: 2; /* Đảm bảo nút xóa cũng ở hàng 2 */
 }
 
-.filter-group:hover label {
-  color: #2563eb;
-  transform: translateX(3px);
+.btn-reset-filter:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
 
-/* ============================================
-   DATE RANGE PICKER
-   ============================================ */
-
+/* ===== DATE RANGE PICKER ===== */
 .date-range-picker {
   position: relative;
   width: 100%;
@@ -161,70 +157,53 @@
 .date-range-input {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: white;
+  gap: 10px;
+  padding: 12px 14px;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 25px;
+  background-color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 15px;
-  font-weight: 600;
-  color: #333;
+  transition: all 0.2s;
+  height: 46px;
 }
 
 .date-range-input:hover {
-  border-color: #2563eb;
-  background: rgba(37, 99, 235, 0.02);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+  border-color: #9ca3af;
 }
 
 .input-icon {
   font-size: 18px;
-  color: #2563eb;
+  flex-shrink: 0;
 }
 
 .input-text {
   flex: 1;
-  color: #333;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .input-arrow {
-  font-size: 10px;
+  font-size: 11px;
   color: #6b7280;
-  transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
-.date-range-input:hover .input-arrow {
-  color: #2563eb;
-  transform: translateY(2px);
-}
-
-/* Calendar Popup */
+/* ===== CALENDAR POPUP ===== */
 .calendar-popup {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 20px;
   z-index: 1000;
-  min-width: 320px;
-  animation: fadeInUp 0.3s ease-out;
+  background: white;
   border: 2px solid #e5e7eb;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  min-width: 340px;
 }
 
 .calendar-header {
@@ -235,53 +214,46 @@
 }
 
 .calendar-nav {
-  background: rgba(37, 99, 235, 0.1);
+  background: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #2563eb;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  font-weight: 700;
+  padding: 6px 10px;
+  color: #6b7280;
+  transition: all 0.2s;
+  border-radius: 8px;
 }
 
 .calendar-nav:hover {
-  background: #2563eb;
-  color: white;
-  transform: scale(1.1);
+  color: #6366f1;
+  background-color: #f3f4f6;
 }
 
 .calendar-month {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: #1e40af;
+  color: #111827;
 }
 
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .calendar-weekday {
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #6b7280;
-  padding: 8px 0;
+  padding: 10px 0;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 20px;
+  gap: 6px;
 }
 
 .calendar-day {
@@ -289,295 +261,178 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  color: #333;
+  transition: all 0.2s;
+  color: #374151;
+  font-weight: 500;
+}
+
+.calendar-day:not(.empty):hover {
+  background-color: #f3f4f6;
 }
 
 .calendar-day.empty {
   cursor: default;
-  background: transparent;
-}
-
-.calendar-day:not(.empty):hover {
-  background: rgba(37, 99, 235, 0.15);
-  transform: scale(1.15);
-  color: #1e40af;
-}
-
-.calendar-day.today {
-  color: #2563eb;
-  font-weight: 700;
-  border: 2px solid #2563eb;
 }
 
 .calendar-day.selected {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  background-color: #6366f1;
   color: white;
-  transform: scale(1.08);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+  font-weight: 700;
 }
 
-.calendar-day.in-range {
-  background: rgba(37, 99, 235, 0.15);
-  color: #1e40af;
+.calendar-day.in-range:not(.selected) {
+  background-color: #e0e7ff;
+  color: #4338ca;
 }
 
-.calendar-day.selected.in-range {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-  color: white;
+.calendar-day.today {
+  border: 2px solid #6366f1;
 }
 
 .calendar-footer {
   display: flex;
-  gap: 12px;
   justify-content: flex-end;
-  padding-top: 16px;
-  border-top: 2px solid #f3f4f6;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e5e7eb;
 }
 
 .btn-cancel,
 .btn-confirm {
-  padding: 10px 24px;
-  border: none;
-  border-radius: 10px;
+  padding: 10px 20px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
 }
 
 .btn-cancel {
-  background: #f3f4f6;
-  color: #6b7280;
+  background-color: white;
+  border: 2px solid #d1d5db;
+  color: #374151;
 }
 
 .btn-cancel:hover {
-  background: #e5e7eb;
-  color: #333;
-  transform: translateY(-2px);
+  background-color: #f9fafb;
+  border-color: #9ca3af;
 }
 
 .btn-confirm {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  background-color: #6366f1;
+  border: 2px solid #6366f1;
   color: white;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .btn-confirm:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+  background-color: #4f46e5;
+  border-color: #4f46e5;
 }
 
-/* ============================================
-   SELECT INPUTS
-   ============================================ */
-
-.filter-group select {
-  padding: 12px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 15px;
-  background: white;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  outline: none;
-  font-weight: 600;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232563eb' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-.filter-group select:hover {
-  border-color: #2563eb;
-  background-color: rgba(37, 99, 235, 0.02);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
-}
-
-.filter-group select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
-  transform: translateY(-2px);
-}
-
-/* ============================================
-   RESET FILTER BUTTON
-   ============================================ */
-
-.btn-reset-filter {
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: center;
-  white-space: nowrap;
-}
-
-.btn-reset-filter:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-}
-
-.btn-reset-filter:active {
-  transform: translateY(-1px);
-}
-
-/* ============================================
-   ACTIVE FILTERS TAGS
-   ============================================ */
-
+/* ===== ACTIVE FILTERS (Hàng 3 - chỉ hiện khi có filter) ===== */
 .active-filters {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 20px;
-  padding: 15px 20px;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(29, 78, 216, 0.08) 100%);
-  border-radius: 12px;
-  border: 2px dashed #2563eb;
+  gap: 10px;
   flex-wrap: wrap;
-  animation: fadeIn 0.4s ease-out;
+  padding: 16px 20px;
+  background-color: #fefefe;
+  border: 3px dashed #d1d5db;
+  border-radius: 20px;
 }
 
 .active-filters-label {
-  font-weight: 700;
-  color: #1e40af;
   font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-right: 6px;
 }
 
 .filter-tag {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  gap: 10px;
+  padding: 8px 16px;
+  background-color: #1f2937;
   color: white;
-  border-radius: 20px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-  animation: fadeIn 0.3s ease-out;
-  transition: all 0.3s ease;
-}
-
-.filter-tag:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+  border-radius: 20px;
+  white-space: nowrap;
 }
 
 .filter-tag button {
-  background: rgba(255, 255, 255, 0.25);
+  background: none;
   border: none;
   color: white;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  font-size: 16px;
   cursor: pointer;
+  padding: 0 4px;
+  margin: 0;
+  opacity: 0.9;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  transition: all 0.3s ease;
-  padding: 0;
-  line-height: 1;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
 }
 
 .filter-tag button:hover {
-  background: rgba(255, 255, 255, 0.5);
-  transform: rotate(90deg) scale(1.3);
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-@media (max-width: 1200px) {
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
   .filters-row {
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  
+  .filter-group:first-child label,
+  .filter-group:first-child > :not(label) {
+    grid-column: 1 / -1;
+  }
+  
+  .filter-group:last-child label {
+    grid-column: 1 / -1;
+  }
+  
+  .filter-group:last-child .btn-reset-filter {
+    grid-column: 1 / -1;
   }
 }
 
-@media (max-width: 768px) {
-  .filters-container {
-    padding: 20px;
-  }
-  
-  .search-input-main {
-    font-size: 14px;
-    padding: 14px 10px;
-  }
-  
+@media (max-width: 640px) {
   .filters-row {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto auto auto auto auto;
   }
   
-  .filter-group select {
-    font-size: 14px;
-  }
-  
-  .active-filters {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .filter-tag {
-    font-size: 12px;
-    padding: 6px 12px;
+  .filter-group label,
+  .filter-group > :not(label) {
+    grid-column: 1;
   }
 
   .calendar-popup {
     left: 50%;
     transform: translateX(-50%);
+    min-width: 300px;
   }
-}
 
-/* ============================================
-   ADDITIONAL EFFECTS
-   ============================================ */
-
-.filter-group:hover label {
-  color: #2563eb;
-}
-
-/* Smooth transitions for all interactive elements */
-.filters-container * {
-  transition: all 0.3s ease;
-}
-
-/* Loading state */
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
-
-/* Focus visible for accessibility */
-.search-input-main:focus,
-.filter-group select:focus,
-.btn-reset-filter:focus,
-.filter-tag button:focus,
-.date-range-input:focus {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
+  .active-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .btn-reset-filter {
+    width: 100%;
+    justify-content: center;
+  }
 }

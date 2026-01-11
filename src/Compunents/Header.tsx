@@ -1,14 +1,13 @@
 import React from "react";
 import "../assets/header.css";
 
-function Header({stats, setShowModal}: {
+function Header({stats}: {
   stats: {
     currentFund: number;
     pendingFund: number;
     totalIncome: number;
     totalExpense: number;
   }, 
-  setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
@@ -18,9 +17,6 @@ function Header({stats, setShowModal}: {
     <div className="header">
       <div className="header-top">
         <h1>💰 Quản Lý Quỹ Phòng</h1>
-        {/* <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-          ➕ Thêm giao dịch
-        </button> */}
       </div>
 
       <div className="stats">

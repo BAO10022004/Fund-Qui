@@ -1,0 +1,245 @@
+/* HeaderManagePerson.css - Màu xanh chủ đạo */
+
+/* Header Container */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e3f2fd;
+  position: relative;
+}
+
+.header-container::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, #1e88e5 0%, #1565c0 100%);
+}
+
+/* Title Wrapper */
+.header-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Header Icon */
+.header-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3);
+  transition: all 0.3s ease;
+}
+
+.header-icon:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(30, 136, 229, 0.4);
+}
+
+.header-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+}
+
+/* Header Title */
+.header-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #1e88e5 0%, #0277bd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+/* Add Button */
+.add-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(30, 136, 229, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.add-button:hover::before {
+  left: 100%;
+}
+
+.add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(30, 136, 229, 0.4);
+  background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+}
+
+.add-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+}
+
+/* Button Icon */
+.add-button-icon {
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.add-button:hover .add-button-icon {
+  background: rgba(255, 255, 255, 0.35);
+  transform: rotate(90deg);
+}
+
+/* Button Text */
+.add-button-text {
+  position: relative;
+  letter-spacing: 0.3px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 18px;
+    align-items: stretch;
+    padding-bottom: 18px;
+  }
+
+  .header-container::after {
+    width: 80px;
+  }
+
+  .header-title-wrapper {
+    justify-content: center;
+  }
+
+  .header-title {
+    font-size: 22px;
+  }
+
+  .header-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .header-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .add-button {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .header-title {
+    font-size: 20px;
+  }
+
+  .add-button {
+    padding: 11px 18px;
+    font-size: 14px;
+  }
+
+  .add-button-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 18px;
+  }
+}
+
+/* Animation on load */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-container {
+  animation: fadeInDown 0.4s ease;
+}
+
+/* Focus styles for accessibility */
+.add-button:focus-visible {
+  outline: 2px solid #1e88e5;
+  outline-offset: 2px;
+}
+
+/* Additional polish */
+.header-title-wrapper {
+  position: relative;
+}
+
+.header-title-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  width: 1px;
+  height: 30px;
+  background: linear-gradient(180deg, transparent, #e3f2fd, transparent);
+  transform: translateY(-50%);
+}
+
+@media (max-width: 768px) {
+  .header-title-wrapper::after {
+    display: none;
+  }
+}

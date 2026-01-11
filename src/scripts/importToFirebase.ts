@@ -41,7 +41,7 @@ const sampleTransactions = [
     status: "completed"
   },
   {
-    date: "2024-01-20",
+    date: "2024-01-20", 
     dayOfWeek: "Thứ 7",
     amount: 100000,
     type: "thu",
