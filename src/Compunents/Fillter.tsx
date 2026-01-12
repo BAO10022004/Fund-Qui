@@ -139,10 +139,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({
       'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
     ];
 
-    // Empty cells for days before month starts
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
-    }
+    
 
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {

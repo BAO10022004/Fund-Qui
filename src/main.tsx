@@ -10,8 +10,9 @@ import ManageTransactions from './Pages/ManageTransaction';
 import Login from './Pages/Login';
 import ManageAccounts from './Pages/ManageAccount';
 import EditAccount from './Pages/EditAccount';
+import ManageAction from './Pages/ManageAction';
 import { Auth } from './Auth';
-
+import DiaryPage from './Pages/ManageDiary';
 // Global auth instance
 export const auth = new Auth();
 
@@ -107,7 +108,22 @@ ReactDOM.createRoot(rootElement).render(
             </ProtectedRoute>
           } 
         />
-
+        <Route 
+          path="/admin/action" 
+          element={
+            <ProtectedRoute>
+              <ManageAction />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/diary" 
+          element={
+            <ProtectedRoute>
+              <DiaryPage />
+            </ProtectedRoute>
+          } 
+        />
         {/* ✅ Catch all: Redirect mọi route không tồn tại về trang chủ */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,4 +1,4 @@
-/* Dashboard.css - Glass Morphism Card Layout */
+/* Dashboard.css - Glass Morphism Card Layout - Mobile Fixed */
 
 .dashboard-container {
   min-height: 100vh;
@@ -287,6 +287,11 @@
   left: auto;
   margin: 0;
   overflow: hidden;
+  /* MOBILE FIX: Ensure touch events work */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Glass Shine Effect */
@@ -299,19 +304,60 @@
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: left 0.5s;
+  pointer-events: none;
 }
 
-.electron:hover::before {
-  left: 100%;
+/* Desktop hover effects */
+@media (hover: hover) {
+  .electron:hover::before {
+    left: 100%;
+  }
+
+  .electron:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.2),
+      0 0 40px rgba(255, 255, 255, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .electron:hover .electron-inner {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.2),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  }
+
+  .electron:hover .electron-icon {
+    transform: scale(1.1);
+    animation: iconBounce 0.6s ease-in-out infinite;
+  }
+
+  .electron:hover .electron-glow {
+    opacity: 1;
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  .electron:hover .electron-label span:first-child {
+    transform: translateX(5px);
+    text-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(255, 255, 255, 0.5);
+  }
 }
 
-.electron:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.2),
-    0 0 40px rgba(255, 255, 255, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.4);
+/* Mobile touch feedback */
+@media (hover: none) {
+  .electron:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .electron:active .electron-inner {
+    transform: scale(0.95);
+  }
 }
 
 .electron-inner {
@@ -328,24 +374,14 @@
   position: relative;
   flex-shrink: 0;
   transition: all 0.3s;
-}
-
-.electron:hover .electron-inner {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 
-    0 12px 32px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  pointer-events: none;
 }
 
 .electron-icon {
   font-size: 2.5rem;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
   transition: transform 0.3s;
-}
-
-.electron:hover .electron-icon {
-  transform: scale(1.1);
-  animation: iconBounce 0.6s ease-in-out infinite;
+  pointer-events: none;
 }
 
 @keyframes iconBounce {
@@ -360,11 +396,6 @@
   opacity: 0;
   transition: opacity 0.4s;
   pointer-events: none;
-}
-
-.electron:hover .electron-glow {
-  opacity: 1;
-  animation: glowPulse 2s ease-in-out infinite;
 }
 
 @keyframes glowPulse {
@@ -382,7 +413,7 @@
   box-shadow: none;
   bottom: auto;
   left: auto;
-  pointer-events: all;
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -403,13 +434,6 @@
   font-weight: 400;
 }
 
-.electron:hover .electron-label span:first-child {
-  transform: translateX(5px);
-  text-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(255, 255, 255, 0.5);
-}
-
 /* Color Variants */
 .electron[style*="#3b82f6"] {
   color: #3b82f6;
@@ -425,6 +449,10 @@
 
 .electron[style*="#8b5cf6"] {
   color: #8b5cf6;
+}
+
+.electron[style*="#5b5cf6"] {
+  color: #5b5cf6;
 }
 
 /* Particles - Enhanced */
@@ -541,10 +569,30 @@
 
   .function-cards {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .electron {
     padding: 1.5rem;
+    /* Enhanced mobile tap area */
+    min-height: 120px;
+  }
+
+  .electron-inner {
+    width: 70px;
+    height: 70px;
+  }
+
+  .electron-icon {
+    font-size: 2rem;
+  }
+
+  .electron-label span:first-child {
+    font-size: 1.1rem;
+  }
+
+  .electron-label::after {
+    font-size: 0.8rem;
   }
 
   .instructions {
@@ -553,5 +601,10 @@
     right: 1rem;
     transform: none;
     text-align: center;
+  }
+
+  /* Reduce particles on mobile for performance */
+  .particle {
+    display: none;
   }
 }

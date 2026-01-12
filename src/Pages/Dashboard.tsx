@@ -54,6 +54,17 @@ const Dashboard: React.FC = () => {
       color: '#8b5cf6',
       adminOnly: true,
       description: 'Xem lịch sử giao dịch'
+    },
+   
+    {
+      id: 'diary',
+      title: 'Nhật ký',
+      icon: '📝',
+      path: '/admin/diary',
+      color: '#5b5cf6',
+      adminOnly: false,
+      description: 'Quản lý sổ tay'
+    
     }
   ];
 
@@ -70,12 +81,7 @@ const Dashboard: React.FC = () => {
     navigate(path);
   };
 
-  const handleLogout = () => {
-    if (window.confirm('Bạn có chắc muốn đăng xuất?')) {
-      auth.logout();
-      navigate('/login');
-    }
-  };
+  
 
   if (!currentUser) {
     return null;

@@ -309,9 +309,14 @@ const ManageAccounts: React.FC = () => {
       alert('Vui lòng điền đầy đủ thông tin!');
       return;
     }
-
     if (!editingAccount && !formData.password) {
       alert('Vui lòng nhập mật khẩu!');
+      return;
+    }
+    
+    // Ensure role has a valid value
+    if (!formData.role || (formData.role !== 'admin' && formData.role !== 'user')) {
+      alert('Vui lòng chọn vai trò hợp lệ!');
       return;
     }
 
@@ -322,11 +327,14 @@ const ManageAccounts: React.FC = () => {
         await updateAccount(editingAccount.id, {
           userName: formData.userName,
           codePerson: formData.codePerson,
-          role: formData.role
+          role: formData.role || 'user' // Ensure role is never undefined
         });
         alert('✅ Cập nhật thành công!');
       } else {
-        await createAccount(formData);
+        await createAccount({
+          ...formData,
+          role: formData.role || 'user' // Ensure role is never undefined
+        });
         alert('✅ Thêm tài khoản thành công!');
       }
       
@@ -338,7 +346,6 @@ const ManageAccounts: React.FC = () => {
       setLoading(false);
     }
   };
-
   const handleDelete = async (id: string) => {
     if (window.confirm('Bạn có chắc muốn xóa tài khoản này?')) {
       try {

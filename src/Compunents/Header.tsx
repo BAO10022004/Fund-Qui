@@ -16,7 +16,7 @@ function Header({stats}: {
   return (
     <div className="header">
       <div className="header-top">
-        <h1>💰 Quản Lý Quỹ Phòng</h1>
+        <h1>💰Quỹ Phòng</h1>
       </div>
 
       <div className="stats">
