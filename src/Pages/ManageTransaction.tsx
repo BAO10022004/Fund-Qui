@@ -23,13 +23,15 @@ import LoadingSpinner from '../Compunents/LoadingSpinner';
 import GridDataTransaction from '../Compunents/GridDataTransaction';
 import AddTransaction from '../Compunents/AddTransaction';
 import type { Transaction } from '../models/Transaction';
+import { logCreate, logUpdate, logDelete } from '../services/HistoryService';
+import { Auth } from '../Auth';
 const ManageTransactions: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [persons, setPersons] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  
+  const auth = new Auth();
   // Filters
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
@@ -127,9 +129,11 @@ const ManageTransactions: React.FC = () => {
       };
 
       if (editingTransaction && editingTransaction.id) {
+        logUpdate(auth.getUsername()!, `Cập nhật giao dịch có id: ${editingTransaction.id}`);
         await updateDoc(doc(db, 'transactions', editingTransaction.id), transactionData);
         alert('✅ Cập nhật giao dịch thành công!');
       } else {
+        logCreate(auth.getUsername()!, `Thêm giao dịch mới cho người: ${selectedPerson?.name || ''} với số tiền: ${formData.amount}`);
         await addDoc(collection(db, 'transactions'), transactionData);
         alert('✅ Thêm giao dịch thành công!');
       }
@@ -215,7 +219,8 @@ const ManageTransactions: React.FC = () => {
       <GridDataTransaction 
         filteredTransactions={filteredTransactions}
         openModal={openModal}
-        setFilteredTransactions={setTransactions}               
+        setFilteredTransactions={setTransactions} 
+        handleDelete={handleDelete}              
       />
 
       {/* Modal */}

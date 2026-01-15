@@ -65,6 +65,16 @@ const Dashboard: React.FC = () => {
       adminOnly: false,
       description: 'Quản lý sổ tay'
     
+    },
+    {
+      id: 'History',
+      title: 'Lịch Sử',
+      icon: '📝',
+      path: '/history',
+      color: '#5b5cf6',
+      adminOnly: true,
+      description: 'Quản lý thay đổi'
+    
     }
   ];
 

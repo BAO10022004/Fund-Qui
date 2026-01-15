@@ -4,7 +4,7 @@ import { authenticateAccount } from '../services/AccountService';
 import { auth } from '../main'; // ✅ Import auth từ main.tsx
 import type { Account } from '../models/Account';
 import '../assets/Login.css';
-
+import {logLogin} from '../services/HistoryService';
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -48,6 +48,7 @@ const Login = () => {
           account.codePerson,
         );
         console.log('Login successful:', auth.getState());
+        logLogin(account.username);
         navigate('/');
       } else {
         setError('❌ Tài khoản hoặc mật khẩu không đúng!');

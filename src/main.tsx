@@ -13,6 +13,7 @@ import EditAccount from './Pages/EditAccount';
 import ManageAction from './Pages/ManageAction';
 import { Auth } from './Auth';
 import DiaryPage from './Pages/ManageDiary';
+import ManageHistory from './Pages/ManageHistory';
 // Global auth instance
 export const auth = new Auth();
 
@@ -63,7 +64,14 @@ ReactDOM.createRoot(rootElement).render(
             </ProtectedRoute>
           } 
         />
-        
+        <Route 
+          path="/history" 
+          element={
+            <ProtectedRoute>
+              <ManageHistory />
+            </ProtectedRoute>
+          } 
+        />
         <Route 
           path="/accounts" 
           element={

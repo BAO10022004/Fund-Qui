@@ -1,15 +1,13 @@
 import React from "react";
 import type { Transaction } from "../models/Transaction";
 
-function GridDataTransaction({ openModal,filteredTransactions , setFilteredTransactions }: { openModal: (transaction: Transaction) => void } & { filteredTransactions: Transaction[] } & { setFilteredTransactions: React.Dispatch<React.SetStateAction<Transaction[]>> }) {
+function GridDataTransaction({ openModal,filteredTransactions , setFilteredTransactions,handleDelete  }: { openModal: (transaction: Transaction) => void } & { filteredTransactions: Transaction[] } & { setFilteredTransactions: React.Dispatch<React.SetStateAction<Transaction[]>> } & { handleDelete: (id: string | undefined) => void }) {
 
     const formatCurrency = (amount: number): string => {
       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
 
-    const handleDelete = (id: string): void => {
-      setFilteredTransactions(filteredTransactions.filter(t => t.id !== id));
-    };
+  
 
     return (
         <div className="table-container">

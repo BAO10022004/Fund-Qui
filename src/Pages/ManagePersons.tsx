@@ -7,11 +7,14 @@ import AddPerson from '../Compunents/AddPerson';
 import { getAllPersons } from '../services/PersonService';
 import { addPerson, updatePerson, deletePerson } from '../services/PersonService';
 import type { Person } from '../models/Person';
+import { logDelete, logCreate, logUpdate } from '../services/HistoryService';
+import { Auth } from '../Auth';
 const ManagePersons: React.FC = () => {
   const [persons, setPersons] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const auth = new Auth();
   const [formData, setFormData] = useState({
     name: '',
     code: ''
@@ -58,9 +61,11 @@ const ManagePersons: React.FC = () => {
       
       if (editingPerson && editingPerson.id) {
         await updatePerson(editingPerson.id, formData);
+        logUpdate(auth.getUsername()!, `Cập nhật Person có id: ${editingPerson.id}`);
         alert('✅ Cập nhật thành công!');
       } else {
         await addPerson(formData);
+        logCreate(auth.getUsername()!, `Thêm Person mới với tên: ${formData.name}`);
         alert('✅ Thêm người thành công!');
       }
       
@@ -81,6 +86,8 @@ const ManagePersons: React.FC = () => {
         setLoading(true);
         await deletePerson(id);
         await loadPersons();
+       
+        logDelete(auth.getUsername()!,  `Xóa Person có id: ${id}`);
         alert('✅ Xóa thành công!');
       } catch (error) {
         alert('❌ Không thể xóa!');
