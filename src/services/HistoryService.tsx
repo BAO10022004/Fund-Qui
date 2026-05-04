@@ -7,7 +7,7 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import type { History, HistoryType } from '../models/history';
+import type { History, HistoryType } from '../models/History';
 
 const HISTORY_COLLECTION = 'history';
 

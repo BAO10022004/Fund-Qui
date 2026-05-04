@@ -12,7 +12,9 @@ import type { Diary } from '../models/Diary';
 import type { Session } from '../models/Session';
 import '../assets/ManageDiary.css';
 import { auth } from '../main';
+import { useNavigate } from 'react-router-dom';
 const DiaryPage: React.FC = () => {
+  const navigate = useNavigate();
   const [diaries, setDiaries] = useState<Diary[]>([]);
   const [actions, setActions] = useState<Action[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -153,6 +155,26 @@ const DiaryPage: React.FC = () => {
   return (
     <div className="diary-page">
       <div className="container">
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            marginBottom: '1rem',
+            background: 'rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            borderRadius: '50px',
+            padding: '0.5rem 1rem',
+            color: 'white',
+            cursor: 'pointer',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+          }}
+        >
+          ← Trang chủ
+        </button>
         {/* Debug info */}
         {process.env.NODE_ENV === 'development' && (
           <div style={{padding: '10px', background: '#f0f0f0', marginBottom: '10px'}}>

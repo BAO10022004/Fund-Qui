@@ -7,24 +7,25 @@ import QuyPhong from './Pages/QuyPhong';
 import ManagePersons from './Pages/ManagePersons';
 import AdminLayout from './Pages/AdminLayout';
 import ManageTransactions from './Pages/ManageTransaction';
-import Login from './Pages/Login';
 import ManageAccounts from './Pages/ManageAccount';
 import EditAccount from './Pages/EditAccount';
 import ManageAction from './Pages/ManageAction';
 import { Auth } from './Auth';
 import DiaryPage from './Pages/ManageDiary';
 import ManageHistory from './Pages/ManageHistory';
+
 // Global auth instance
 export const auth = new Auth();
 
-// Protected Route Component - Sử dụng auth global
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+// Admin Protected Route - Chỉ admin routes mới cần đăng nhập
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = auth.isAuthenticated();
-  
+
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Lưu lại URL muốn truy cập để redirect sau khi login
+    return <Navigate to="/" replace state={{ requireLogin: true }} />;
   }
-  
+
   return <>{children}</>;
 };
 
@@ -38,101 +39,90 @@ ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HashRouter>
       <Routes>
-        {/* Route login - DUY NHẤT route công khai */}
-        <Route path="/login" element={<Login />} />
-        
-        {/* Route login - DUY NHẤT route công khai */}
-        <Route path="/login" element={<Login />} />
-        
-        {/* TẤT CẢ routes khác đều yêu cầu đăng nhập */}
-        
-        {/* Dashboard - Trang chủ với 3D Atom */}
-        <Route 
-          path="/" 
+        {/* ===== PUBLIC ROUTES - Không cần đăng nhập ===== */}
+        {/* Dashboard - Trang chủ công khai */}
+        <Route path="/" element={<Dashboard />} />
+
+        {/* Quỹ Phòng - Công khai */}
+        <Route path="/quy-phong" element={<QuyPhong />} />
+
+        {/* Nhật ký - Công khai
+        <Route path="/diary" element={<DiaryPage />} /> */}
+
+        {/* ===== ADMIN ROUTES - Yêu cầu đăng nhập ===== */}
+        <Route
+          path="/admin"
           element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route 
-          path="/quy-phong" 
-          element={
-            <ProtectedRoute>
-              <QuyPhong />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/history" 
-          element={
-            <ProtectedRoute>
-              <ManageHistory />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/accounts" 
-          element={
-            <ProtectedRoute>
-              <ManageAccounts />
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route 
-          path="/accounts/edit" 
-          element={
-            <ProtectedRoute>
-              <EditAccount />
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route 
-          path="/admin" 
-          element={
-            <ProtectedRoute>
+            <AdminRoute>
               <AdminLayout />
-            </ProtectedRoute>
-          } 
+            </AdminRoute>
+          }
         />
-        
-        <Route 
-          path="/admin/persons" 
+
+        <Route
+          path="/admin/persons"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <ManagePersons />
-            </ProtectedRoute>
-          } 
+            </AdminRoute>
+          }
         />
-        
-        <Route 
-          path="/admin/transactions" 
+
+        <Route
+          path="/admin/transactions"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <ManageTransactions />
-            </ProtectedRoute>
-          } 
+            </AdminRoute>
+          }
         />
-        <Route 
-          path="/admin/action" 
+
+        <Route
+          path="/admin/action"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <ManageAction />
-            </ProtectedRoute>
-          } 
+            </AdminRoute>
+          }
         />
-        <Route 
-          path="/admin/diary" 
+
+        <Route
+          path="/admin/diary"
           element={
-            <ProtectedRoute>
+            <AdminRoute>
               <DiaryPage />
-            </ProtectedRoute>
-          } 
+            </AdminRoute>
+          }
         />
-        {/* ✅ Catch all: Redirect mọi route không tồn tại về trang chủ */}
+
+        <Route
+          path="/history"
+          element={
+            <AdminRoute>
+              <ManageHistory />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/accounts"
+          element={
+            <AdminRoute>
+              <ManageAccounts />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/accounts/edit"
+          element={
+            <AdminRoute>
+              <EditAccount />
+            </AdminRoute>
+          }
+        />
+
+        {/* Catch all: Redirect mọi route không tồn tại về trang chủ */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

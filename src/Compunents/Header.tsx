@@ -1,38 +1,44 @@
+// Header.tsx - Chỉ export stats data, layout do QuyPhong.tsx quản lý
 import React from "react";
 import "../assets/header.css";
 
-function Header({stats}: {
+function Header({ stats }: {
   stats: {
     currentFund: number;
     pendingFund: number;
     totalIncome: number;
     totalExpense: number;
-  }, 
-}) {
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
   };
+}) {
+  const formatCurrency = (amount: number): string =>
+    new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
 
   return (
-    <div className="header">
-      <div className="header-top">
-        <h1>💰Quỹ Phòng</h1>
+    <div className="qp-stats">
+      <div className="stat-card balance">
+        <div className="stat-label">Quỹ hiện tại</div>
+        <div className={`stat-value ${stats.currentFund >= 0 ? 'positive' : 'negative'}`}>
+          {formatCurrency(stats.currentFund)}
+        </div>
+        <div className="stat-note">Đã hoàn thành</div>
       </div>
 
-      <div className="stats">
-        <div className="stat-card balance">
-          <div className="stat-label">Tổng Quỹ Hiện Tại</div>
-          <div className={`stat-value ${stats.currentFund >= 0 ? 'positive' : 'negative'}`}>
-            {formatCurrency(stats.currentFund)}
-          </div>
-          <div className="stat-note">Đã hoàn thành</div>
-        </div>
-        
-        <div className="stat-card pending">
-          <div className="stat-label">Quỹ Chưa Thu</div>
-          <div className="stat-value warning">{formatCurrency(stats.pendingFund)}</div>
-          <div className="stat-note">Đang chờ</div>
-        </div>
+      <div className="stat-card pending">
+        <div className="stat-label">Chưa thu</div>
+        <div className="stat-value warning">{formatCurrency(stats.pendingFund)}</div>
+        <div className="stat-note">Đang chờ xử lý</div>
+      </div>
+
+      <div className="stat-card" style={{ '--card-accent': '#10b981' } as React.CSSProperties}>
+        <div className="stat-label">Tổng thu</div>
+        <div className="stat-value positive">{formatCurrency(stats.totalIncome)}</div>
+        <div className="stat-note">Đã hoàn thành</div>
+      </div>
+
+      <div className="stat-card" style={{ '--card-accent': '#f43f5e' } as React.CSSProperties}>
+        <div className="stat-label">Tổng chi</div>
+        <div className="stat-value negative">{formatCurrency(stats.totalExpense)}</div>
+        <div className="stat-note">Đã hoàn thành</div>
       </div>
     </div>
   );

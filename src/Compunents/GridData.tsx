@@ -23,7 +23,7 @@ function GripData(
               <th>Trạng thái</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody key={filteredTransactions.map(t => t.id).join('-')}>
             {filteredTransactions.length === 0 ? (
               <tr>
                 <td colSpan={6} className="empty-state">
@@ -31,8 +31,11 @@ function GripData(
                 </td>
               </tr>
             ) : (
-              filteredTransactions.map(transaction => (
-                <tr key={transaction.id}>
+              filteredTransactions.map((transaction, index) => (
+                <tr 
+                  key={transaction.id}
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
                   <td>
                     <div className="date-info">
                       <span className="day-of-week">{transaction.dayOfWeek}</span>
@@ -53,7 +56,14 @@ function GripData(
                     </span>
                   </td>
                   <td>{transaction.description}</td>
-                  <td>👤 {transaction.personName}</td>
+                  <td>
+                    <div className="person-cell">
+                      <div className="person-avatar">
+                        {transaction.personName ? transaction.personName.charAt(0).toUpperCase() : '👤'}
+                      </div>
+                      <span>{transaction.personName}</span>
+                    </div>
+                  </td>
                   <td>
                     <span className={`badge ${transaction.status}`}>
                       {transaction.status === 'completed' ? '✓ Đã thu' : '⏰ Chưa thu'}

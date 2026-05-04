@@ -10,7 +10,8 @@ import { getAllPersons } from '../services/PersonService';
 import type { Account } from '../models/Account';
 import type { Person } from '../models/Person';
 import '../assets/ManageAccounts.css';
-
+import { logCreate, logUpdate, logDelete } from '../services/HistoryService';
+import { Auth } from '../Auth';
 // Header Component
 const HeaderManageAccounts = ({ openModal }: { openModal: () => void }) => (
   <div className="header-accounts-container">
@@ -253,6 +254,7 @@ const ManageAccounts: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const auth = new Auth();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -329,12 +331,14 @@ const ManageAccounts: React.FC = () => {
           codePerson: formData.codePerson,
           role: formData.role || 'user' // Ensure role is never undefined
         });
+        logUpdate(auth.getUsername()!, `Cập nhật tài khoản có id: ${editingAccount.id}`);
         alert('✅ Cập nhật thành công!');
       } else {
         await createAccount({
           ...formData,
           role: formData.role || 'user' // Ensure role is never undefined
         });
+        logCreate(auth.getUsername()!, `Thêm tài khoản mới với username: ${formData.username}`);
         alert('✅ Thêm tài khoản thành công!');
       }
       
@@ -352,6 +356,7 @@ const ManageAccounts: React.FC = () => {
         setLoading(true);
         await deleteAccount(id);
         await loadData();
+        logDelete(auth.getUsername()!,  `Xóa tài khoản có id: ${id}`);
         alert('✅ Xóa thành công!');
       } catch (error) {
         alert('❌ Không thể xóa!');
@@ -367,6 +372,7 @@ const ManageAccounts: React.FC = () => {
       try {
         setLoading(true);
         await updateAccount(id, { password: newPassword });
+        logUpdate(auth.getUsername()!, `Đặt lại mật khẩu cho tài khoản có id: ${id}`);
         alert('✅ Đặt lại mật khẩu thành công!');
       } catch (error) {
         alert('❌ Không thể đặt lại mật khẩu!');

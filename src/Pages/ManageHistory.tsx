@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllHistory } from '../services/HistoryService';
-import type { History } from '../models/history';
+import type { History } from '../models/History';
 import '../assets/ManageHistory.css';
 
 // Header Component

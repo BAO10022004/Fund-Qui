@@ -155,7 +155,7 @@ const ManageTransactions: React.FC = () => {
         setLoading(true);
         await deleteDoc(doc(db, 'transactions', id));
         await loadData();
-       logDelete(auth.getUsername()!,  `Xóa giao dịch có id: ${id}`);
+        logDelete(auth.getUsername()!,  `Xóa giao dịch có id: ${id}`);
         alert('✅ Xóa thành công!');
       } catch (error) {
         alert('❌ Không thể xóa!');

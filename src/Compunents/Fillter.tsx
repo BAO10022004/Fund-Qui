@@ -217,7 +217,7 @@ function Filter({
 }: FilterProps) {
   return (
     <div className="filters-container">
-      {/* Thanh tìm kiếm chính ở trên */}
+      {/* Search bar */}
       <div className="search-bar-main">
         <div className="search-input-wrapper">
           <span className="search-icon">🔍</span>
@@ -241,41 +241,44 @@ function Filter({
         </div>
       </div>
 
-      {/* Các bộ lọc ở dưới */}
-      <div className="filters-row">
-        <div className="filter-group">
-          <label>📅 Khoảng thời gian</label>
-          <DateRangePicker
-            startDate={startDate || ''}
-            endDate={endDate || ''}
-            onStartDateChange={setStartDate || (() => {})}
-            onEndDateChange={setEndDate || (() => {})}
-          />
-        </div>
+      {/* Filters row in glass wrapper */}
+      <div className="filters-row-wrapper">
+        <div className="filters-row">
+          <div className="filter-group">
+            <label>📅 Khoảng thời gian</label>
+            <DateRangePicker
+              startDate={startDate || ''}
+              endDate={endDate || ''}
+              onStartDateChange={setStartDate || (() => {})}
+              onEndDateChange={setEndDate || (() => {})}
+            />
+          </div>
 
-        <div className="filter-group">
-          <label>👤 Người</label>
-          <select value={personFilter} onChange={e => setPersonFilter(e.target.value)}>
-            <option value="all">Tất cả</option>
-            {persons.map(person => (
-              <option key={person.id} value={person.id}>
-                {person.name} - {person.code}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="filter-group">
+            <label>👤 Người</label>
+            <select value={personFilter} onChange={e => setPersonFilter(e.target.value)}>
+              <option value="all">Tất cả</option>
+              {persons.map(person => (
+                <option key={person.id} value={person.id}>
+                  {person.name} - {person.code}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="filter-group">
-          <label>📊 Trạng thái</label>
-          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-            <option value="all">Tất cả</option>
-            <option value="pending">Chưa thu</option>
-            <option value="completed">Đã thu</option>
-          </select>
+          <div className="filter-group">
+            <label>📊 Trạng thái</label>
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+              <option value="all">Tất cả</option>
+              <option value="pending">Chưa thu</option>
+              <option value="completed">Đã thu</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
   );
+
 }
 
 export default Filter;
