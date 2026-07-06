@@ -2,8 +2,10 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+
 const firebaseConfig = {
-apiKey: "AIzaSyBnP8V6xWabk0cfGhwY4AdPX829rPPRnf4",
+  apiKey: "AIzaSyBnP8V6xWabk0cfGhwY4AdPX829rPPRnf4",
   authDomain: "bourbon-d0505.firebaseapp.com",
   projectId: "bourbon-d0505",
   storageBucket: "bourbon-d0505.firebasestorage.app",
@@ -15,3 +17,5 @@ apiKey: "AIzaSyBnP8V6xWabk0cfGhwY4AdPX829rPPRnf4",
 export const app = initializeApp(firebaseConfig);
 export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
+export const firebaseAuth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();

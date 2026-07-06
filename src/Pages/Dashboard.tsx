@@ -11,6 +11,8 @@ interface MenuItem {
   icon: string;
   path: string;
   gradient: string;
+  color1: string;
+  color2: string;
   description: string;
   adminOnly: boolean;
 }
@@ -23,6 +25,8 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: '💰',
     path: '/quy-phong',
     gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    color1: '#3b82f6',
+    color2: '#1d4ed8',
     description: 'Xem số dư & giao dịch quỹ chung',
     adminOnly: false,
   },
@@ -33,6 +37,8 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: '👥',
     path: '/accounts',
     gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+    color1: '#8b5cf6',
+    color2: '#7c3aed',
     description: 'Quản lý tài khoản người dùng',
     adminOnly: true,
   },
@@ -42,6 +48,8 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: '👤',
     path: '/admin/persons',
     gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
+    color1: '#f59e0b',
+    color2: '#d97706',
     description: 'Quản lý thông tin cá nhân',
     adminOnly: true,
   },
@@ -51,6 +59,8 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: '📊',
     path: '/admin/transactions',
     gradient: 'linear-gradient(135deg, #ec4899, #db2777)',
+    color1: '#ec4899',
+    color2: '#db2777',
     description: 'Xem & quản lý lịch sử giao dịch',
     adminOnly: true,
   },
@@ -60,6 +70,8 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: '📝',
     path: '/admin/diary',
     gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+    color1: '#06b6d4',
+    color2: '#0891b2',
     description: 'Thêm, sửa, xóa nhật ký',
     adminOnly: true,
   },
@@ -69,6 +81,8 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: '⚡',
     path: '/admin/action',
     gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
+    color1: '#f97316',
+    color2: '#ea580c',
     description: 'Quản lý danh sách hoạt động',
     adminOnly: true,
   },
@@ -78,6 +92,8 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: '🕐',
     path: '/history',
     gradient: 'linear-gradient(135deg, #64748b, #475569)',
+    color1: '#64748b',
+    color2: '#475569',
     description: 'Xem lịch sử thay đổi hệ thống',
     adminOnly: true,
   },
@@ -225,21 +241,58 @@ const Dashboard: React.FC = () => {
         <section className="dash-welcome">
           <div className="welcome-glass">
             <div className="welcome-glass-shine"></div>
-            <div className="welcome-content">
-              <div className="welcome-emoji">👋</div>
-              <div>
-                <h1 className="welcome-title">
-                  {isAdmin && currentUser
-                    ? `Chào, ${currentUser.username}!`
-                    : 'Chào mừng đến với Quỹ Phòng!'}
-                </h1>
-                <p className="welcome-desc">
-                  {isAdmin
-                    ? 'Bạn đang truy cập với quyền quản trị viên.'
-                    : 'Chọn chức năng bên dưới để bắt đầu.'}
-                </p>
+            
+            {/* Left Column */}
+            <div className="welcome-left">
+              <div className="welcome-badge-pill">
+                Nền tảng quản lý tài chính thế hệ mới
+              </div>
+              <h1 className="welcome-main-title">
+                Quản Lý Tài Chính Cùng <span className="text-highlight">Quỹ Phòng</span>.
+              </h1>
+              <p className="welcome-subtitle-text">
+                Theo dõi số dư, quản lý thu chi và thống kê giao dịch của quỹ nhóm một cách chính xác, minh bạch và trực quan.
+              </p>
+              <button 
+                className="explore-btn-mock"
+                onClick={() => {
+                  document.getElementById('card-quy-phong')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Khám phá quỹ phòng
+              </button>
+            </div>
+
+            {/* Right Column (Handwritten Welcome Drawing SVG) */}
+            <div className="welcome-right">
+              <div className="welcome-svg-container">
+                <svg viewBox="0 0 320 120" style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
+                  <defs>
+                    <linearGradient id="rainbowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#10b981" />
+                      <stop offset="20%" stopColor="#84cc16" />
+                      <stop offset="40%" stopColor="#f59e0b" />
+                      <stop offset="60%" stopColor="#ef4444" />
+                      <stop offset="80%" stopColor="#a855f7" />
+                      <stop offset="100%" stopColor="#3b82f6" />
+                    </linearGradient>
+                  </defs>
+                  <text 
+                    x="10" 
+                    y="85" 
+                    fontFamily="'Pacifico', cursive" 
+                    fontSize="72" 
+                    fill="none" 
+                    stroke="url(#rainbowGrad)" 
+                    strokeWidth="3.5"
+                    className="welcome-writing-text"
+                  >
+                    Welcome
+                  </text>
+                </svg>
               </div>
             </div>
+
           </div>
         </section>
 
@@ -336,7 +389,14 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, isHovered, onHover, onClick, 
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && onClick(item)}
       aria-label={`${item.title}: ${item.description}`}
+      style={{ 
+        '--beam-color-1': item.color1, 
+        '--beam-color-2': item.color2 
+      } as React.CSSProperties}
     >
+      {/* Rotating border beam */}
+      <div className="card-border-beam"></div>
+
       {/* Glass layers */}
       <div className="card-glass-base"></div>
       <div className="card-glass-shine"></div>

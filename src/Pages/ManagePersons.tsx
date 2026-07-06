@@ -81,7 +81,7 @@ const ManagePersons: React.FC = () => {
   const handleDelete = async (id: string | undefined) => {
     if (!id) return;
     
-    if (window.confirm('Bạn có chắc muốn xóa người này?\n⚠️ Cảnh báo: Các giao dịch liên quan sẽ không bị xóa nhưng có thể bị lỗi hiển thị!')) {
+    if (await (window as any).customConfirm('Bạn có chắc muốn xóa người này?\n⚠️ Cảnh báo: Các giao dịch liên quan sẽ không bị xóa nhưng có thể bị lỗi hiển thị!')) {
       try {
         setLoading(true);
         await deletePerson(id);

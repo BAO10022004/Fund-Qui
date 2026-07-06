@@ -351,7 +351,7 @@ const ManageAccounts: React.FC = () => {
     }
   };
   const handleDelete = async (id: string) => {
-    if (window.confirm('Bạn có chắc muốn xóa tài khoản này?')) {
+    if (await (window as any).customConfirm('Bạn có chắc muốn xóa tài khoản này?')) {
       try {
         setLoading(true);
         await deleteAccount(id);

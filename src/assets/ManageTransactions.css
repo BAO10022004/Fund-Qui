@@ -544,3 +544,274 @@
     margin: 20px;
   }
 }
+
+/* ===== NEW MOCK TABLE STYLE (LIKE IMAGE - LIGHT THEME) ===== */
+.mock-table-container {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e4e4e7;
+  background: #ffffff;
+  margin-top: 1rem;
+}
+
+.mock-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.mock-table thead {
+  background: #111111; /* Dark header like mock */
+}
+
+.mock-table th {
+  padding: 1.1rem 1.5rem;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+  border: none;
+}
+
+.mock-table th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.mock-table th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.mock-table tbody tr {
+  border-bottom: 1px solid #f4f4f5;
+  background: #ffffff;
+  transition: background-color 0.2s ease;
+}
+
+.mock-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.mock-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.mock-table td {
+  padding: 1.1rem 1.5rem;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: #27272a;
+  border: none;
+}
+
+/* User Column styling */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f4f4f5;
+  color: #18181b;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #e4e4e7;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #18181b;
+  font-size: 0.95rem;
+}
+
+.user-subtext {
+  font-size: 0.8rem;
+  color: #71717a;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Role / Phân loại styling */
+.role-text {
+  font-size: 0.9rem;
+  color: #27272a;
+  font-weight: 500;
+}
+
+/* Status pill styling */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.775rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.status-pill.active {
+  background: #ecfdf5;
+  color: #10b981;
+  border: 1px solid #a7f3d0;
+}
+
+.status-pill.pending {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.status-pill.inactive {
+  background: #f4f4f5;
+  color: #71717a;
+  border: 1px solid #e4e4e7;
+}
+
+/* Date / Last Active */
+.date-text-mock {
+  font-size: 0.9rem;
+  color: #71717a;
+}
+
+/* Amount styling */
+.amount-text-mock {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.amount-text-mock.positive {
+  color: #10b981;
+}
+
+.amount-text-mock.negative {
+  color: #ef4444;
+}
+
+/* Actions Column styling */
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.action-btn-mock {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+  color: #71717a;
+}
+
+.action-btn-mock:hover {
+  transform: scale(1.15);
+}
+
+.action-btn-mock.edit-btn:hover {
+  color: #18181b;
+}
+
+.action-btn-mock.delete-btn {
+  color: #ef4444;
+}
+
+.action-btn-mock.delete-btn:hover {
+  color: #dc2626;
+}
+
+.action-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== PAGINATION STYLING (LIGHT THEME) ===== */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: #ffffff;
+  border-top: 1px solid #f4f4f5;
+  border-radius: 0 0 12px 12px;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e4e4e7;
+  background: #ffffff;
+  color: #27272a;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pagination-page-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #71717a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pagination-page-num:hover {
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.pagination-page-num.active {
+  background: #18181b;
+  color: #ffffff;
+  border-color: #18181b;
+}

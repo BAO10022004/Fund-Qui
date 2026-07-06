@@ -130,7 +130,7 @@ const DiaryPage: React.FC = () => {
   };
 
   const handleDelete = async (diaryId: string) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa nhật ký này?')) {
+    if (!await (window as any).customConfirm('Bạn có chắc chắn muốn xóa nhật ký này?')) {
       return;
     }
 

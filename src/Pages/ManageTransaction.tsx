@@ -150,7 +150,7 @@ const ManageTransactions: React.FC = () => {
   const handleDelete = async (id: string | undefined) => {
     if (!id) return;
 
-    if (window.confirm('Bạn có chắc muốn xóa giao dịch này?')) {
+    if (await (window as any).customConfirm('Bạn có chắc muốn xóa giao dịch này?')) {
       try {
         setLoading(true);
         await deleteDoc(doc(db, 'transactions', id));
