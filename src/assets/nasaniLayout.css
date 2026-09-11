@@ -1,0 +1,467 @@
+/* nasaniLayout.css - Replica of Nasani Admin CMS Design */
+
+:root {
+  --nasani-primary-red: #c51f1f;
+  --nasani-primary-red-hover: #b91c1c;
+  --nasani-accent-blue: #0284c7;
+  --nasani-bg-main: #f4f6f9;
+  --nasani-sidebar-bg: #ffffff;
+  --nasani-sidebar-width: 255px;
+  --nasani-sidebar-collapsed-width: 70px;
+  --nasani-header-height: 58px;
+  --nasani-border-color: #e5e7eb;
+  --nasani-text-main: #1f2937;
+  --nasani-text-muted: #6b7280;
+  --nasani-sidebar-item-hover: #f9fafb;
+  --nasani-sidebar-item-active: #fee2e2;
+  --nasani-sidebar-item-active-text: #b91c1c;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--nasani-bg-main) !important;
+  color: var(--nasani-text-main) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nasani-admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--nasani-bg-main);
+}
+
+/* ==================== SIDEBAR ==================== */
+.nasani-sidebar {
+  width: var(--nasani-sidebar-width);
+  background: var(--nasani-sidebar-bg);
+  border-right: 1px solid var(--nasani-border-color);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 1px 0 10px rgba(0, 0, 0, 0.03);
+}
+
+.nasani-sidebar.collapsed {
+  width: var(--nasani-sidebar-collapsed-width);
+}
+
+/* Brand Header */
+.nasani-brand-header {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--nasani-border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-decoration: none;
+  background: #ffffff;
+}
+
+.nasani-brand-logo-text {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #dc2626 !important;
+  margin: 0;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.nasani-brand-sub-text {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0284c7 !important;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nasani-sidebar.collapsed .nasani-brand-header {
+  align-items: center;
+  padding: 16px 10px;
+}
+
+.nasani-sidebar.collapsed .nasani-brand-logo-text {
+  font-size: 18px;
+}
+
+.nasani-sidebar.collapsed .nasani-brand-sub-text {
+  display: none;
+}
+
+/* Sidebar Navigation */
+.nasani-sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 0 24px;
+}
+
+.nasani-sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.nasani-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.nasani-menu-group {
+  margin-bottom: 14px;
+}
+
+.nasani-group-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #dc2626 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 20px 4px;
+  margin: 0;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nasani-sidebar.collapsed .nasani-group-title {
+  display: none;
+}
+
+.nasani-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nasani-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 20px;
+  color: #4b5563 !important;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nasani-nav-link:hover {
+  background-color: #f9fafb;
+  color: #111827 !important;
+}
+
+.nasani-nav-link.active {
+  color: #dc2626 !important;
+  background-color: #fef2f2;
+  font-weight: 600;
+  border-left: 3px solid #dc2626;
+  padding-left: 17px;
+}
+
+.nasani-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+  flex-shrink: 0;
+  font-size: 15px;
+}
+
+.nasani-nav-link.active .nasani-nav-icon {
+  color: #dc2626;
+}
+
+.nasani-badge-role {
+  margin-left: auto;
+  font-size: 9.5px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.nasani-badge-role.admin {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+/* ==================== MAIN CONTENT AREA ==================== */
+.nasani-main-container {
+  flex: 1;
+  margin-left: var(--nasani-sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--nasani-bg-main);
+}
+
+.nasani-sidebar.collapsed ~ .nasani-main-container {
+  margin-left: var(--nasani-sidebar-collapsed-width);
+}
+
+/* ==================== TOP NAVBAR ==================== */
+.nasani-top-navbar {
+  height: var(--nasani-header-height);
+  background: #ffffff;
+  border-bottom: 1px solid var(--nasani-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+}
+
+.nasani-top-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nasani-toggle-sidebar-btn {
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: #4b5563;
+  font-size: 18px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.nasani-toggle-sidebar-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.nasani-greeting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #4b5563;
+}
+
+.nasani-greeting .moon-icon {
+  font-size: 16px;
+  filter: drop-shadow(0 0 4px #fbbf24);
+}
+
+.nasani-search-box {
+  position: relative;
+  width: 220px;
+}
+
+.nasani-search-input {
+  width: 100%;
+  padding: 6px 12px 6px 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  font-size: 13px;
+  background: #f9fafb;
+  color: #1f2937;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.nasani-search-input:focus {
+  background: #ffffff;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.25);
+  width: 260px;
+}
+
+.nasani-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* Navbar Right Actions */
+.nasani-top-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nasani-version-pill {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.nasani-action-icon-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.nasani-action-icon-btn:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.nasani-bell-badge {
+  position: absolute;
+  top: -1px;
+  right: -2px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+}
+
+.nasani-user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.nasani-user-profile-btn:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+.nasani-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  object-fit: cover;
+}
+
+.nasani-profile-dropdown {
+  position: absolute;
+  top: 52px;
+  right: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  width: 230px;
+  padding: 12px;
+  z-index: 100;
+}
+
+.nasani-profile-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.nasani-profile-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.nasani-profile-email {
+  font-size: 12px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nasani-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: #334155;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.nasani-dropdown-item:hover {
+  background: #f1f5f9;
+}
+
+.nasani-dropdown-item.danger {
+  color: #dc2626;
+}
+
+.nasani-dropdown-item.danger:hover {
+  background: #fef2f2;
+}
+
+/* ==================== CONTENT BODY ==================== */
+.nasani-content-body {
+  padding: 24px;
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .nasani-search-box {
+    display: none;
+  }
+  .nasani-sidebar {
+    transform: translateX(-100%);
+  }
+  .nasani-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  .nasani-main-container {
+    margin-left: 0 !important;
+  }
+}

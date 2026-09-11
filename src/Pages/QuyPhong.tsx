@@ -6,14 +6,15 @@ import Loader from '../Compunents/Loading';
 import GripData from '../Compunents/GridData';
 import LoadingSpinner from '../Compunents/LoadingSpinner';
 import { getAllPersons } from '../services/PersonService';
+import { getAllAccounts } from '../services/AccountService';
 import type { Person } from '../models/Person';
+import type { Account } from '../models/Account';
 import type { Transaction } from '../models/Transaction';
 import { getAllTransactions } from '../services/TransactionsService';
-import { useNavigate } from 'react-router-dom';
 
 const QuyPhong: React.FC = () => {
-  const navigate = useNavigate();
   const [persons, setPersons] = useState<Person[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,12 +29,17 @@ const QuyPhong: React.FC = () => {
   const loadInitialData = async () => {
     try {
       setLoading(true);
-      const [personsData, transactionsData] = await Promise.all([
+      const [personsData, transactionsData, accountsData] = await Promise.all([
         getAllPersons(),
-        getAllTransactions()
+        getAllTransactions(),
+        getAllAccounts().catch(err => {
+          console.warn('Lỗi khi tải accounts:', err);
+          return [] as Account[];
+        })
       ]);
       setPersons(personsData);
       setTransactions(transactionsData);
+      setAccounts(accountsData);
     } catch (error) {
       console.error('Lỗi khi tải dữ liệu:', error);
       alert('Không thể tải dữ liệu từ Firebase. Vui lòng kiểm tra kết nối!');
@@ -71,7 +77,7 @@ const QuyPhong: React.FC = () => {
 
   const calculateStats = () => {
     const completed = transactions.filter(t => t.status === 'completed');
-    const income  = completed.filter(t => t.type === 'thu').reduce((s, t) => s + t.amount, 0);
+    const income = completed.filter(t => t.type === 'thu').reduce((s, t) => s + t.amount, 0);
     const expense = completed.filter(t => t.type === 'chi').reduce((s, t) => s + t.amount, 0);
     const pending = transactions.filter(t => t.type === 'thu' && t.status === 'pending').reduce((s, t) => s + t.amount, 0);
     return { currentFund: income - expense, pendingFund: pending, totalIncome: income, totalExpense: expense };
@@ -84,29 +90,9 @@ const QuyPhong: React.FC = () => {
 
   return (
     <div className="qp-page">
-      {/* ===== NAVBAR ===== */}
-      <nav className="qp-navbar">
-        <div className="qp-nav-left">
-          <button className="qp-back-btn" onClick={() => navigate('/')}>
-            ← Trang chủ
-          </button>
-          <div className="qp-nav-title">
-            <span className="qp-nav-icon">💰</span>
-            <span>Quỹ Phòng</span>
-          </div>
-        </div>
-        <button
-          className="qp-back-btn"
-          onClick={loadInitialData}
-          style={{ gap: '0.35rem' }}
-          title="Tải lại dữ liệu"
-        >
-          🔄 Làm mới
-        </button>
-      </nav>
-
       {/* ===== MAIN CONTENT ===== */}
       <div className="qp-content">
+
 
         {/* Stats */}
         <div>
@@ -145,6 +131,7 @@ const QuyPhong: React.FC = () => {
           <p className="qp-section-title">Bộ lọc</p>
           <Fillter
             persons={persons}
+            accounts={accounts}
             personFilter={personFilter}
             setPersonFilter={setPersonFilter}
             statusFilter={statusFilter}

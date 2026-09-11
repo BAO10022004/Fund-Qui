@@ -2,18 +2,19 @@
 
 /* Page Container */
 .manage-accounts-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 40px 20px;
+  min-height: auto;
+  background: transparent;
+  padding: 0;
 }
 
 .page-content-accounts {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
-  background: white;
+  background: #ffffff;
   border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 26px 30px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
 }
 
 /* Header */
@@ -107,43 +108,63 @@
   overflow-x: auto;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: #ffffff;
 }
 
 .accounts-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: #ffffff !important;
 }
 
 .accounts-table thead {
-  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%) !important;
 }
 
 .accounts-table thead tr th {
-  padding: 16px 20px;
+  padding: 16px 20px !important;
   text-align: left;
-  font-weight: 600;
-  font-size: 14px;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 .accounts-table thead tr th:last-child {
   text-align: center;
 }
 
+.accounts-table tbody {
+  perspective: none !important;
+}
+
 .accounts-table tbody tr {
-  border-bottom: 1px solid #f0f0f0;
-  transition: all 0.2s ease;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  transform: none !important;
+  animation: none !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  transition: background 0.2s ease !important;
 }
 
 .accounts-table tbody tr:hover {
-  background: #f8f9ff;
+  background: #f8f9ff !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .accounts-table tbody td {
-  padding: 16px 20px;
+  padding: 14px 20px !important;
+  background: transparent !important;
+  border-top: none !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  color: #1e293b !important;
 }
 
 /* Account Username */
@@ -164,6 +185,17 @@
   justify-content: center;
   font-weight: 700;
   font-size: 16px;
+  flex-shrink: 0;
+}
+
+.account-avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
 }
 
 /* Account Code */

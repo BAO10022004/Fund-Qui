@@ -9,9 +9,8 @@ import {
 } from '../services/DiaryService';
 import type { Action } from '../models/Action';
 import type { Diary } from '../models/Diary';
-import type { Session } from '../models/Session';
 import '../assets/ManageDiary.css';
-import { auth } from '../main';
+import { auth } from '../Auth';
 import { useNavigate } from 'react-router-dom';
 const DiaryPage: React.FC = () => {
   const navigate = useNavigate();

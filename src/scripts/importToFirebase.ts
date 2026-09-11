@@ -98,7 +98,7 @@ async function importPersons() {
   return personIds;
 }
 
-async function importTransactions(personIds: { [key: string]: string }) {
+async function importTransactions(_personIds: { [key: string]: string }) {
   console.log('💰 Đang import transactions...');
   
   // Lấy danh sách persons từ Firebase để map

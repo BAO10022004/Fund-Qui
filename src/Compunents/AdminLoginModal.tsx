@@ -1,7 +1,7 @@
 // AdminLoginModal.tsx - Modal đăng nhập admin với Liquid Glass effect
 import React, { useState, useEffect } from 'react';
 import { getAccountByUsername } from '../services/AccountService';
-import { auth } from '../main';
+import { auth } from '../Auth';
 import type { Account } from '../models/Account';
 import { logLogin } from '../services/HistoryService';
 import { signInWithPopup } from 'firebase/auth';

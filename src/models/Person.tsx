@@ -5,4 +5,5 @@ export interface Person {
   name: string;
   code: string;
   createdAt?: Timestamp;
+  avatar?: string;
 }

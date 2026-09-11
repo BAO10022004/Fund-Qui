@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { auth } from '../main';
+import { auth } from '../Auth';
 import '../assets/adminLayout.css';
 
 const AdminLayout: React.FC = () => {

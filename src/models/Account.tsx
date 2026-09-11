@@ -9,4 +9,5 @@ export interface Account {
   createdAt?: Timestamp;
   userName: string;
   password: string;
+  avatar?: string;      // Avatar riêng của tài khoản (tách riêng với Google)
 }

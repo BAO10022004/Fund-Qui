@@ -1,0 +1,410 @@
+/* nasaniDashboard.css - Exact Replica of the User's Design Screenshot */
+
+.nasani-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Quick fund summary banner */
+.nasani-fund-banner {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.nasani-fund-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nasani-fund-icon {
+  font-size: 24px;
+}
+
+.nasani-fund-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937 !important;
+}
+
+.nasani-fund-sub {
+  font-size: 13px;
+  color: #6b7280 !important;
+}
+
+.nasani-fund-btn {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nasani-fund-btn:hover {
+  background: #b91c1c !important;
+}
+
+/* Main Two-Column Row */
+.nasani-dash-grid-top {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+}
+
+@media (max-width: 1100px) {
+  .nasani-dash-grid-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* White Cards */
+.nasani-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.nasani-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.nasani-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #374151 !important;
+  margin: 0;
+}
+
+.nasani-card-meta {
+  font-size: 12.5px;
+  color: #9ca3af !important;
+}
+
+/* 4 Stat Boxes Row */
+.nasani-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .nasani-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.nasani-stat-box {
+  background: #ffffff !important;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.nasani-stat-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.nasani-stat-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.nasani-stat-circle.pink {
+  background: #fce7f3;
+  color: #ec4899;
+}
+
+.nasani-stat-circle.cyan {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.nasani-stat-circle.coral {
+  background: #ffe4e6;
+  color: #f43f5e;
+}
+
+.nasani-stat-circle.green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.nasani-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.nasani-stat-val {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1f2937 !important;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.nasani-stat-lbl {
+  font-size: 12px;
+  color: #6b7280 !important;
+  margin-top: 2px;
+}
+
+/* Filter Controls Bar */
+.nasani-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.nasani-input-filter {
+  padding: 7px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13.5px;
+  color: #374151 !important;
+  background: #ffffff !important;
+  outline: none;
+  min-width: 140px;
+}
+
+.nasani-input-filter:focus {
+  border-color: #10b981;
+}
+
+.nasani-btn-submit-filter {
+  background: #16a34a !important;
+  color: #ffffff !important;
+  border: none;
+  padding: 7px 20px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.nasani-btn-submit-filter:hover {
+  background: #15803d !important;
+}
+
+/* Chart Container */
+.nasani-chart-container {
+  position: relative;
+  width: 100%;
+  height: 270px;
+  padding-top: 10px;
+}
+
+.nasani-chart-axis-y {
+  position: absolute;
+  top: 0;
+  bottom: 30px;
+  left: 0;
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280 !important;
+  text-align: right;
+  padding-right: 6px;
+}
+
+.nasani-chart-bars-wrap {
+  position: absolute;
+  top: 0;
+  bottom: 30px;
+  left: 38px;
+  right: 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.nasani-chart-grid-line {
+  position: absolute;
+  left: 38px;
+  right: 10px;
+  border-top: 1px solid #f3f4f6;
+  pointer-events: none;
+}
+
+.nasani-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  position: relative;
+  cursor: pointer;
+}
+
+.nasani-bar-pill {
+  width: 100%;
+  max-width: 22px;
+  background: #e86161;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.4s ease, background-color 0.15s;
+  min-height: 2px;
+}
+
+.nasani-bar-col:hover .nasani-bar-pill {
+  background: #dc2626;
+}
+
+.nasani-bar-lbl {
+  position: absolute;
+  bottom: -22px;
+  font-size: 10.5px;
+  color: #6b7280 !important;
+  white-space: nowrap;
+}
+
+/* Tooltip for chart */
+.nasani-bar-tooltip {
+  position: absolute;
+  top: -28px;
+  background: #1f2937 !important;
+  color: #ffffff !important;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Top IP Card List */
+.nasani-ip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nasani-ip-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fafafa !important;
+  transition: background 0.15s;
+}
+
+.nasani-ip-item:hover {
+  background: #f4f4f5 !important;
+}
+
+.nasani-ip-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nasani-ip-badge-pin {
+  background: #fee2e2;
+  color: #dc2626 !important;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 7px;
+  border-radius: 12px;
+  border: 1px solid #fca5a5;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nasani-ip-addr {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #374151 !important;
+  font-family: monospace;
+}
+
+.nasani-ip-count {
+  font-size: 14px;
+  font-weight: 800;
+  color: #dc2626 !important;
+}
+
+/* Bottom Grid (2 Cards) */
+.nasani-dash-grid-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .nasani-dash-grid-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nasani-metric-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nasani-metric-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nasani-metric-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #374151 !important;
+}
+
+.nasani-metric-track {
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.nasani-metric-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}

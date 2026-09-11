@@ -1,0 +1,457 @@
+/* PersonSelectModal.css - Giao diện chọn người TOÀN MÀN HÌNH, VUÔNG VỨC & HIỆU ỨNG TỪNG NGƯỜI */
+
+/* ===== HIỆU ỨNG TỪNG NGƯỜI XUẤT HIỆN & ẨN ĐI ===== */
+@keyframes personCardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.92);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes personCardExit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+}
+
+/* Hiệu ứng mờ nền toàn màn hình */
+@keyframes pmFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pmFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ===== TOÀN MÀN HÌNH OVERLAY (VUÔNG VỨC, KHÔNG BO GÓC) ===== */
+.person-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  width: 100vw;
+  height: 100vh;
+  background: #181b22;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  animation: pmFadeIn 0.25s ease-out forwards;
+}
+
+.person-modal-overlay.closing {
+  animation: pmFadeOut 0.35s ease-in forwards;
+  pointer-events: none;
+}
+
+.person-modal-container {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  background: #181b22;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== HEADER CHÍNH GIỮA & NÚT ĐÓNG GÓC PHẢI ===== */
+.person-modal-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.8rem 3rem 1.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #181b22;
+  flex-shrink: 0;
+}
+
+.person-modal-title {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  text-align: center;
+}
+
+.person-modal-close {
+  position: absolute;
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+  padding: 0;
+}
+
+.person-modal-close:hover {
+  background: rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.08);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== KHU VỰC THÂN TOÀN MÀN HÌNH ===== */
+.person-modal-body {
+  flex: 1;
+  padding: 2.2rem 3.5rem 3.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Thanh cuộn tối sang trọng */
+.person-modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+.person-modal-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25);
+}
+.person-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 0;
+}
+.person-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Lưới 3 cột chuẩn như ảnh mẫu */
+.person-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.8rem;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ===== TỪNG THẺ THÀNH VIÊN VUÔNG VỨC NHƯ HÌNH MẪU ===== */
+.person-card-item {
+  position: relative;
+  aspect-ratio: 16 / 11;
+  min-height: 220px;
+  border-radius: 0 !important; /* Vuông vức 100% không bo tròn */
+  overflow: hidden;
+  background: #20242e;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  user-select: none;
+  /* Hiệu ứng xuất hiện từng người */
+  animation: personCardEnter 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Khi đang đóng: hiệu ứng ẩn từng người theo chiều ngược lại */
+.person-modal-overlay.closing .person-card-item {
+  animation: personCardExit 0.22s cubic-bezier(0.4, 0, 1, 1) both !important;
+}
+
+.person-card-item:hover {
+  transform: translateY(-4px) scale(1.015);
+  border-color: #60a5fa !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 18px rgba(59, 130, 246, 0.4);
+}
+
+.person-card-item.selected {
+  border: 1.5px solid #3b82f6 !important;
+  box-shadow: 0 0 0 2px #3b82f6, 0 14px 32px rgba(59, 130, 246, 0.45);
+}
+
+/* Hình ảnh nền của thẻ vuông vức */
+.person-card-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0 !important;
+}
+
+.person-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0 !important;
+  transition: transform 0.45s ease;
+}
+
+.person-card-item:hover .person-card-img {
+  transform: scale(1.06);
+}
+
+/* Lớp phủ chuyển màu đen mờ ở chân ảnh (khớp 100% ảnh mẫu) */
+.person-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.2) 35%,
+    rgba(0, 0, 0, 0.75) 65%,
+    rgba(0, 0, 0, 0.96) 100%
+  );
+  pointer-events: none;
+  border-radius: 0 !important;
+}
+
+/* Huy hiệu Đang chọn vuông vức */
+.person-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 0 !important; /* Vuông vức */
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+}
+
+/* Huy hiệu mã nhân viên & avatar nhỏ góc trên trái (vuông vức) */
+.person-card-avatar-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 4px 9px;
+  border-radius: 0 !important; /* Vuông vức */
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  z-index: 2;
+}
+
+.person-avatar-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 0 !important; /* Vuông vức */
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.person-code-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  letter-spacing: 0.04em;
+}
+
+/* Nội dung chữ in đậm chữ hoa ở đáy ảnh (giống hệt ảnh mẫu) */
+.person-card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 18px;
+  z-index: 2;
+}
+
+.person-card-name {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+  line-height: 1.3;
+}
+
+.person-card-sub {
+  margin: 3px 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Thẻ Tất cả thành viên */
+.person-card-all {
+  background: linear-gradient(135deg, #1e1b4b 0%, #1e293b 100%);
+}
+
+/* ===== TRIGGER BUTTON IN FILTER ROW (BO TRÒN NHƯ NÚT CHỌN TRẠNG THÁI) ===== */
+.person-select-trigger {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0 1rem;
+  font-size: 0.95rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  background: rgba(10, 15, 35, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px !important; /* Bo tròn giống nút chọn trạng thái */
+  color: #e2e8f0;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.person-select-trigger:hover {
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  background-color: rgba(15, 20, 45, 0.6);
+}
+
+.person-select-trigger:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+}
+
+.person-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow: hidden;
+  flex: 1;
+}
+
+.person-trigger-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px !important;
+  object-fit: cover;
+  border: 1.5px solid #8b5cf6;
+  flex-shrink: 0;
+}
+
+.person-trigger-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.person-trigger-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #f1f5f9;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.person-trigger-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.person-trigger-clear {
+  background: rgba(239, 68, 68, 0.18);
+  border: none;
+  color: #fca5a5;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.person-trigger-clear:hover {
+  background: rgba(239, 68, 68, 0.4);
+  color: #ffffff;
+}
+
+.person-trigger-arrow {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  transition: transform 0.25s ease;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media (max-width: 1100px) {
+  .person-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+  }
+  .person-modal-body {
+    padding: 1.8rem 2rem 2.5rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .person-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+  .person-modal-header {
+    padding: 1.2rem 1.5rem;
+  }
+  .person-modal-close {
+    right: 1.2rem;
+  }
+  .person-modal-title {
+    font-size: 1.2rem;
+  }
+  .person-modal-body {
+    padding: 1.2rem 1.25rem 2rem;
+  }
+}

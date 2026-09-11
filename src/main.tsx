@@ -1,31 +1,33 @@
 // main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Dashboard from './Pages/Dashboard';
 import QuyPhong from './Pages/QuyPhong';
 import ManagePersons from './Pages/ManagePersons';
-import AdminLayout from './Pages/AdminLayout';
 import ManageTransactions from './Pages/ManageTransaction';
 import ManageAccounts from './Pages/ManageAccount';
 import EditAccount from './Pages/EditAccount';
 import ManageAction from './Pages/ManageAction';
-import { Auth } from './Auth';
 import DiaryPage from './Pages/ManageDiary';
 import ManageHistory from './Pages/ManageHistory';
+import Login from './Pages/Login';
+import AppLayout from './Compunents/AppLayout';
+import { auth } from './Auth';
+export { auth } from './Auth';
 import './style.css';
 
-// Override global window.alert with premium liquid glass alert
+// Override global window.alert with liquid glass alert
 const customAlert = (message: string) => {
   const overlay = document.createElement('div');
   overlay.className = 'custom-alert-overlay';
-  
+
   const box = document.createElement('div');
   box.className = 'custom-alert-box';
-  
+
   let emoji = 'ℹ️';
   let cleanMessage = message;
-  
+
   if (message.includes('✅') || message.includes('thành công')) {
     emoji = '🎉';
     cleanMessage = message.replace('✅', '').trim();
@@ -64,7 +66,7 @@ const customAlert = (message: string) => {
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeAlert();
   });
-  
+
   const handleKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape' || e.key === 'Enter') {
       e.preventDefault();
@@ -79,13 +81,13 @@ const customConfirm = (message: string): Promise<boolean> => {
   return new Promise((resolve) => {
     const overlay = document.createElement('div');
     overlay.className = 'custom-alert-overlay';
-    
+
     const box = document.createElement('div');
     box.className = 'custom-alert-box';
-    
+
     let emoji = '❓';
     let cleanMessage = message;
-    
+
     if (message.includes('Cảnh báo') || message.includes('⚠️')) {
       emoji = '⚠️';
       cleanMessage = message.replace('⚠️', '').trim();
@@ -121,7 +123,7 @@ const customConfirm = (message: string): Promise<boolean> => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closeConfirm(false);
     });
-    
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -138,19 +140,34 @@ if (typeof window !== 'undefined') {
   (window as any).customConfirm = customConfirm;
 }
 
-// Global auth instance
-export const auth = new Auth();
-
-// Admin Protected Route - Chỉ admin routes mới cần đăng nhập
-const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = auth.isAuthenticated();
-
-  if (!isAuthenticated) {
-    // Lưu lại URL muốn truy cập để redirect sau khi login
-    return <Navigate to="/" replace state={{ requireLogin: true }} />;
+// Bắt buộc phải đăng nhập (mọi người dùng khi vào trang đều phải qua bước này)
+const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  if (!auth.isAuthenticated()) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
-
   return <>{children}</>;
+};
+
+// Route chỉ dành cho quản trị viên (Admin-only)
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  if (!auth.isAuthenticated()) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+  if (!auth.isAdmin()) {
+    alert('⚠️ Bạn không có quyền truy cập vào chức năng quản trị này!');
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+};
+
+// Route trang đăng nhập công khai (nếu đã đăng nhập rồi thì vào thẳng Dashboard)
+const PublicLoginRoute = () => {
+  if (auth.isAuthenticated()) {
+    return <Navigate to="/" replace />;
+  }
+  return <Login />;
 };
 
 const rootElement = document.getElementById('root');
@@ -163,90 +180,89 @@ ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HashRouter>
       <Routes>
-        {/* ===== PUBLIC ROUTES - Không cần đăng nhập ===== */}
-        {/* Dashboard - Trang chủ công khai */}
-        <Route path="/" element={<Dashboard />} />
+        {/* Route Đăng nhập */}
+        <Route path="/login" element={<PublicLoginRoute />} />
 
-        {/* Quỹ Phòng - Công khai */}
-        <Route path="/quy-phong" element={<QuyPhong />} />
-
-        {/* Nhật ký - Công khai
-        <Route path="/diary" element={<DiaryPage />} /> */}
-
-        {/* ===== ADMIN ROUTES - Yêu cầu đăng nhập ===== */}
+        {/* Mọi route chính đều được bảo vệ và nằm trong AppLayout chuẩn Nasani */}
         <Route
-          path="/admin"
+          path="/"
           element={
-            <AdminRoute>
-              <AdminLayout />
-            </AdminRoute>
+            <RequireAuth>
+              <AppLayout />
+            </RequireAuth>
           }
-        />
+        >
+          {/* Dashboard chính - Trang chủ sau khi đăng nhập */}
+          <Route index element={<Dashboard />} />
 
-        <Route
-          path="/admin/persons"
-          element={
-            <AdminRoute>
-              <ManagePersons />
-            </AdminRoute>
-          }
-        />
+          {/* Quỹ Phòng - Thành viên & Admin đều xem được */}
+          <Route path="quy-phong" element={<QuyPhong />} />
 
-        <Route
-          path="/admin/transactions"
-          element={
-            <AdminRoute>
-              <ManageTransactions />
-            </AdminRoute>
-          }
-        />
+          {/* Nhật ký chi tiêu */}
+          <Route path="admin/diary" element={<DiaryPage />} />
 
-        <Route
-          path="/admin/action"
-          element={
-            <AdminRoute>
-              <ManageAction />
-            </AdminRoute>
-          }
-        />
+          {/* ===== Các chức năng CHỈ ADMIN mới được truy cập ===== */}
+          <Route
+            path="admin/transactions"
+            element={
+              <AdminRoute>
+                <ManageTransactions />
+              </AdminRoute>
+            }
+          />
 
-        <Route
-          path="/admin/diary"
-          element={
-            <AdminRoute>
-              <DiaryPage />
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="admin/persons"
+            element={
+              <AdminRoute>
+                <ManagePersons />
+              </AdminRoute>
+            }
+          />
 
-        <Route
-          path="/history"
-          element={
-            <AdminRoute>
-              <ManageHistory />
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="admin/action"
+            element={
+              <AdminRoute>
+                <ManageAction />
+              </AdminRoute>
+            }
+          />
 
-        <Route
-          path="/accounts"
-          element={
-            <AdminRoute>
-              <ManageAccounts />
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="admin"
+            element={<Navigate to="/admin/transactions" replace />}
+          />
 
-        <Route
-          path="/accounts/edit"
-          element={
-            <AdminRoute>
-              <EditAccount />
-            </AdminRoute>
-          }
-        />
+          <Route
+            path="accounts"
+            element={
+              <AdminRoute>
+                <ManageAccounts />
+              </AdminRoute>
+            }
+          />
 
-        {/* Catch all: Redirect mọi route không tồn tại về trang chủ */}
+          <Route
+            path="accounts/edit"
+            element={
+              <AdminRoute>
+                <EditAccount />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="history"
+            element={
+              <AdminRoute>
+                <ManageHistory />
+              </AdminRoute>
+            }
+          />
+        </Route>
+
+        {/* Catch all: Redirect về trang chủ */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

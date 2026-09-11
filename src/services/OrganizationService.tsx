@@ -7,8 +7,7 @@ import {
   updateDoc,
   deleteDoc,
   query,
-  orderBy,
-  Timestamp
+  orderBy
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Organization } from '../models/Organization';

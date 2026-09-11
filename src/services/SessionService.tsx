@@ -112,19 +112,6 @@ export const getSessionById = async (sessionId: string): Promise<Session | null>
     
     const data = docSnap.data();
     
-    // Lấy action data
-    let action: Action = { id: data.actionId, name: 'Unknown' };
-    if (data.actionId) {
-      const actionRef = doc(db, ACTIONS_COLLECTION, data.actionId);
-      const actionSnap = await getDoc(actionRef);
-      if (actionSnap.exists()) {
-        const actionData = actionSnap.data();
-        action = {
-          id: actionSnap.id,
-          name: actionData.name,
-        };
-      }
-    }
     
     return {
       id: docSnap.id,

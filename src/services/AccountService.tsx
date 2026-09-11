@@ -20,34 +20,36 @@ const PERSONS_COLLECTION = 'persons';
 
 export const createAccount = async (accountData: Omit<Account, 'id' | 'createdAt' | 'personName'>): Promise<string> => {
   try {
-    // Kiểm tra Person có tồn tại không
-    const personQuery = query(
-      collection(db, PERSONS_COLLECTION),
-      where('code', '==', accountData.codePerson)
-    );
-    const personSnapshot = await getDocs(personQuery);
-    
-    if (personSnapshot.empty) {
-      throw new Error(`Không tìm thấy người với mã: ${accountData.codePerson}`);
+    // Kiểm tra Person nếu có liên kết
+    let personName = accountData.userName || accountData.username;
+    if (accountData.codePerson) {
+      const personQuery = query(
+        collection(db, PERSONS_COLLECTION),
+        where('code', '==', accountData.codePerson)
+      );
+      const personSnapshot = await getDocs(personQuery);
+
+      if (!personSnapshot.empty) {
+        const personData = personSnapshot.docs[0].data() as Person;
+        personName = personData.name;
+      }
     }
 
-    const personData = personSnapshot.docs[0].data() as Person;
-    
     // Kiểm tra username đã tồn tại chưa
     const usernameQuery = query(
       collection(db, ACCOUNTS_COLLECTION),
       where('username', '==', accountData.username)
     );
     const usernameSnapshot = await getDocs(usernameQuery);
-    
+
     if (!usernameSnapshot.empty) {
       throw new Error(`Username "${accountData.username}" đã tồn tại!`);
     }
 
-    // Tạo account với personName từ Person
+    // Tạo account
     const newAccount: Omit<Account, 'id'> = {
       ...accountData,
-      personName: personData.name,
+      personName,
       createdAt: Timestamp.now()
     };
 
@@ -66,13 +68,18 @@ export const createAccount = async (accountData: Omit<Account, 'id' | 'createdAt
  */
 export const getAllAccounts = async (): Promise<Account[]> => {
   try {
-    const q = query(collection(db, ACCOUNTS_COLLECTION), orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
+    const querySnapshot = await getDocs(collection(db, ACCOUNTS_COLLECTION));
+    const list = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     } as Account));
+
+    // Sắp xếp theo createdAt giảm dần nếu có
+    return list.sort((a, b) => {
+      const timeA = (a.createdAt as any)?.seconds || 0;
+      const timeB = (b.createdAt as any)?.seconds || 0;
+      return timeB - timeA;
+    });
   } catch (error) {
     console.error('Error getting accounts:', error);
     throw error;
@@ -86,7 +93,7 @@ export const getAccountById = async (accountId: string): Promise<Account | null>
   try {
     const docRef = doc(db, ACCOUNTS_COLLECTION, accountId);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
       return {
         id: docSnap.id,
@@ -110,7 +117,7 @@ export const getAccountByUsername = async (username: string): Promise<Account | 
       where('username', '==', username)
     );
     const querySnapshot = await getDocs(q);
-    
+
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];
       return {
@@ -135,7 +142,7 @@ export const getAccountByCodePerson = async (codePerson: string): Promise<Accoun
       where('codePerson', '==', codePerson)
     );
     const querySnapshot = await getDocs(q);
-    
+
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];
       return {
@@ -151,6 +158,65 @@ export const getAccountByCodePerson = async (codePerson: string): Promise<Accoun
 };
 
 /**
+ * Tìm account bằng Google Email hoặc username phần trước @
+ */
+export const findAccountByGoogleEmail = async (email: string): Promise<Account | null> => {
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const prefix = cleanEmail.split('@')[0];
+
+    // Thử tìm theo exact email
+    let q = query(
+      collection(db, ACCOUNTS_COLLECTION),
+      where('username', '==', cleanEmail)
+    );
+    let snapshot = await getDocs(q);
+
+    // Nếu không thấy, thử tìm case-sensitive ban đầu
+    if (snapshot.empty) {
+      q = query(
+        collection(db, ACCOUNTS_COLLECTION),
+        where('username', '==', email.trim())
+      );
+      snapshot = await getDocs(q);
+    }
+
+    // Nếu không thấy, thử tìm bằng prefix username (trước @)
+    if (snapshot.empty && prefix) {
+      q = query(
+        collection(db, ACCOUNTS_COLLECTION),
+        where('username', '==', prefix)
+      );
+      snapshot = await getDocs(q);
+    }
+
+    if (!snapshot.empty) {
+      const docSnap = snapshot.docs[0];
+      return {
+        id: docSnap.id,
+        ...docSnap.data()
+      } as Account;
+    }
+
+    // Nếu vẫn không thấy, kiểm tra tất cả accounts xem có trùng username/userName không
+    const all = await getAllAccounts();
+    const found = all.find(
+      a =>
+        (a.username && a.username.toLowerCase() === cleanEmail) ||
+        (a.username && a.username.toLowerCase() === prefix) ||
+        (a.userName && a.userName.toLowerCase() === cleanEmail) ||
+        (a.userName && a.userName.toLowerCase() === prefix)
+    );
+
+    return found || null;
+  } catch (error) {
+    console.error('Error finding account by Google email:', error);
+    return null;
+  }
+};
+
+
+/**
  * Lấy tất cả accounts theo role
  */
 export const getAccountsByRole = async (role: 'admin' | 'user'): Promise<Account[]> => {
@@ -161,7 +227,7 @@ export const getAccountsByRole = async (role: 'admin' | 'user'): Promise<Account
       orderBy('createdAt', 'desc')
     );
     const querySnapshot = await getDocs(q);
-    
+
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -184,21 +250,21 @@ export const updateAccount = async (
 ): Promise<void> => {
   try {
     const docRef = doc(db, ACCOUNTS_COLLECTION, accountId);
-    
-    // Nếu codePerson thay đổi, cập nhật personName
+
+    // Nếu codePerson thay đổi, cập nhật personName nếu tìm thấy
     if (accountData.codePerson) {
       const personQuery = query(
         collection(db, PERSONS_COLLECTION),
         where('code', '==', accountData.codePerson)
       );
       const personSnapshot = await getDocs(personQuery);
-      
-      if (personSnapshot.empty) {
-        throw new Error(`Không tìm thấy người với mã: ${accountData.codePerson}`);
-      }
 
-      const personData = personSnapshot.docs[0].data() as Person;
-      accountData.personName = personData.name;
+      if (!personSnapshot.empty) {
+        const personData = personSnapshot.docs[0].data() as Person;
+        accountData.personName = personData.name;
+      } else if (accountData.userName) {
+        accountData.personName = accountData.userName;
+      }
     }
 
     // Kiểm tra username mới có bị trùng không (nếu thay đổi username)
@@ -208,7 +274,7 @@ export const updateAccount = async (
         where('username', '==', accountData.username)
       );
       const usernameSnapshot = await getDocs(usernameQuery);
-      
+
       // Kiểm tra xem có account nào khác dùng username này không
       const duplicateAccount = usernameSnapshot.docs.find(doc => doc.id !== accountId);
       if (duplicateAccount) {
@@ -216,7 +282,16 @@ export const updateAccount = async (
       }
     }
 
-    await updateDoc(docRef, accountData);
+    // Lọc bỏ các trường undefined để tránh lỗi Firestore
+    const sanitizedData: any = {};
+    Object.keys(accountData).forEach(key => {
+      const val = (accountData as any)[key];
+      if (val !== undefined) {
+        sanitizedData[key] = val;
+      }
+    });
+
+    await updateDoc(docRef, sanitizedData);
   } catch (error) {
     console.error('Error updating account:', error);
     throw error;
@@ -281,7 +356,7 @@ export const authenticateAccount = async (
 ): Promise<Account | null> => {
   try {
     const account = await getAccountByUsername(username);
-    
+
     if (account && account.password === password) {
       return account;
     }
@@ -316,11 +391,11 @@ export const syncPersonNameInAccounts = async (codePerson: string, newName: stri
       where('codePerson', '==', codePerson)
     );
     const querySnapshot = await getDocs(q);
-    
-    const updatePromises = querySnapshot.docs.map(doc => 
+
+    const updatePromises = querySnapshot.docs.map(doc =>
       updateDoc(doc.ref, { personName: newName })
     );
-    
+
     await Promise.all(updatePromises);
   } catch (error) {
     console.error('Error syncing person name in accounts:', error);
@@ -349,12 +424,12 @@ export const getAccountsWithPersonInfo = async (): Promise<(Account & { person?:
     const accounts = await getAllAccounts();
     const personsQuery = await getDocs(collection(db, PERSONS_COLLECTION));
     const personsMap = new Map<string, Person>();
-    
+
     personsQuery.docs.forEach(doc => {
       const person = { id: doc.id, ...doc.data() } as Person;
       personsMap.set(person.code, person);
     });
-    
+
     return accounts.map(account => ({
       ...account,
       person: personsMap.get(account.codePerson)

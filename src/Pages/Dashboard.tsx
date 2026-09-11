@@ -1,440 +1,487 @@
-// Dashboard.tsx - Liquid Glass UI với phân tách User/Admin
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { auth } from '../main';
-import AdminLoginModal from '../Compunents/AdminLoginModal';
-import '../assets/Dashboard.css';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { auth } from '../Auth';
+import { getAllTransactions } from '../services/TransactionsService';
+import type { Transaction } from '../models/Transaction';
+import '../assets/nasaniDashboard.css';
 
-interface MenuItem {
-  id: string;
-  title: string;
-  icon: string;
-  path: string;
-  gradient: string;
-  color1: string;
-  color2: string;
-  description: string;
-  adminOnly: boolean;
+interface DailyFundData {
+  day: number;
+  label: string;
+  income: number;
+  expense: number;
+  totalVolume: number;
 }
 
-const ALL_MENU_ITEMS: MenuItem[] = [
-  // ===== USER SECTION =====
-  {
-    id: 'quy-phong',
-    title: 'Quỹ Phòng',
-    icon: '💰',
-    path: '/quy-phong',
-    gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-    color1: '#3b82f6',
-    color2: '#1d4ed8',
-    description: 'Xem số dư & giao dịch quỹ chung',
-    adminOnly: false,
-  },
-  // ===== ADMIN SECTION =====
-  {
-    id: 'accounts',
-    title: 'Tài Khoản',
-    icon: '👥',
-    path: '/accounts',
-    gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-    color1: '#8b5cf6',
-    color2: '#7c3aed',
-    description: 'Quản lý tài khoản người dùng',
-    adminOnly: true,
-  },
-  {
-    id: 'persons',
-    title: 'Người Dùng',
-    icon: '👤',
-    path: '/admin/persons',
-    gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
-    color1: '#f59e0b',
-    color2: '#d97706',
-    description: 'Quản lý thông tin cá nhân',
-    adminOnly: true,
-  },
-  {
-    id: 'transactions',
-    title: 'Giao Dịch',
-    icon: '📊',
-    path: '/admin/transactions',
-    gradient: 'linear-gradient(135deg, #ec4899, #db2777)',
-    color1: '#ec4899',
-    color2: '#db2777',
-    description: 'Xem & quản lý lịch sử giao dịch',
-    adminOnly: true,
-  },
-  {
-    id: 'diary-admin',
-    title: 'Q.Lý Nhật Ký',
-    icon: '📝',
-    path: '/admin/diary',
-    gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-    color1: '#06b6d4',
-    color2: '#0891b2',
-    description: 'Thêm, sửa, xóa nhật ký',
-    adminOnly: true,
-  },
-  {
-    id: 'action',
-    title: 'Hoạt Động',
-    icon: '⚡',
-    path: '/admin/action',
-    gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
-    color1: '#f97316',
-    color2: '#ea580c',
-    description: 'Quản lý danh sách hoạt động',
-    adminOnly: true,
-  },
-  {
-    id: 'history',
-    title: 'Lịch Sử',
-    icon: '🕐',
-    path: '/history',
-    gradient: 'linear-gradient(135deg, #64748b, #475569)',
-    color1: '#64748b',
-    color2: '#475569',
-    description: 'Xem lịch sử thay đổi hệ thống',
-    adminOnly: true,
-  },
-];
+interface TopContributor {
+  name: string;
+  amount: number;
+  rank: number;
+}
 
 const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [pendingPath, setPendingPath] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(auth.isAdmin());
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [time, setTime] = useState(new Date());
+  const now = new Date();
+  const [month, setMonth] = useState<number>(now.getMonth() + 1);
+  const [year, setYear] = useState<number>(now.getFullYear());
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [hoveredBar, setHoveredBar] = useState<DailyFundData | null>(null);
 
-  // Cập nhật đồng hồ mỗi giây
+  const [currentUser, setCurrentUser] = useState<any>(auth.getCurrentUser());
+  const isAdmin = auth.isAdmin();
+
   useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
+    const handleAuthChange = () => {
+      setCurrentUser(auth.getCurrentUser());
+    };
+    window.addEventListener('auth_state_changed', handleAuthChange);
+    return () => window.removeEventListener('auth_state_changed', handleAuthChange);
   }, []);
 
-  // Kiểm tra state từ AdminRoute redirect
+  // Tải danh sách giao dịch từ Firestore
   useEffect(() => {
-    const state = location.state as { requireLogin?: boolean } | null;
-    if (state?.requireLogin) {
-      setShowLoginModal(true);
-      window.history.replaceState({}, document.title);
-    }
-  }, [location.state]);
+    const fetchTransactions = async () => {
+      try {
+        setLoading(true);
+        const data = await getAllTransactions();
+        setTransactions(data);
+      } catch (err) {
+        console.error('Lỗi khi tải giao dịch quỹ:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTransactions();
+  }, []);
 
-  const userItems = ALL_MENU_ITEMS.filter(item => !item.adminOnly);
-  const adminItems = ALL_MENU_ITEMS.filter(item => item.adminOnly);
-
-  const handleNavigate = (item: MenuItem) => {
-    if (item.adminOnly && !isAdmin) {
-      setPendingPath(item.path);
-      setShowLoginModal(true);
-    } else {
-      navigate(item.path);
-    }
+  // Format tiền tệ VNĐ
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
   };
 
-  const handleAdminClick = () => {
-    if (isAdmin) {
-      // Đã login: logout
-      auth.logout();
-      setIsAdmin(false);
-    } else {
-      setShowLoginModal(true);
+  // Tính số ngày trong tháng được chọn
+  const daysInSelectedMonth = useMemo(() => {
+    return new Date(year, month, 0).getDate();
+  }, [year, month]);
+
+  // Lọc các giao dịch theo tháng & năm được chọn
+  const monthlyTransactions = useMemo(() => {
+    return transactions.filter(t => {
+      if (!t.date) return false;
+      const tDate = new Date(t.date);
+      if (isNaN(tDate.getTime())) return false;
+      return tDate.getMonth() + 1 === month && tDate.getFullYear() === year;
+    });
+  }, [transactions, month, year]);
+
+  // Tính toán 4 chỉ số tổng quan quỹ
+  const fundStats = useMemo(() => {
+    // 1. Toàn bộ quỹ tích lũy (tất cả các thời điểm)
+    const allCompleted = transactions.filter(t => t.status === 'completed');
+    const allIncome = allCompleted.filter(t => t.type === 'thu').reduce((sum, t) => sum + (t.amount || 0), 0);
+    const allExpense = allCompleted.filter(t => t.type === 'chi').reduce((sum, t) => sum + (t.amount || 0), 0);
+    const currentBalance = allIncome - allExpense;
+
+    // 2. Thu trong tháng được chọn
+    const monthIncome = monthlyTransactions
+      .filter(t => t.type === 'thu' && t.status === 'completed')
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+    // 3. Chi trong tháng được chọn
+    const monthExpense = monthlyTransactions
+      .filter(t => t.type === 'chi' && t.status === 'completed')
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+    // 4. Các khoản chờ thu / chưa hoàn thành trong tháng
+    const monthPending = monthlyTransactions
+      .filter(t => t.status === 'pending')
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+    return {
+      currentBalance,
+      monthIncome,
+      monthExpense,
+      monthPending
+    };
+  }, [transactions, monthlyTransactions]);
+
+  // Tính dữ liệu biểu đồ D1 đến D30/D31 theo từng ngày
+  const dailyChartData: DailyFundData[] = useMemo(() => {
+    const result: DailyFundData[] = [];
+
+    for (let day = 1; day <= daysInSelectedMonth; day++) {
+      const dayTrans = monthlyTransactions.filter(t => {
+        const d = new Date(t.date);
+        return d.getDate() === day;
+      });
+
+      const income = dayTrans
+        .filter(t => t.type === 'thu')
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+      const expense = dayTrans
+        .filter(t => t.type === 'chi')
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+      result.push({
+        day,
+        label: `D${day}`,
+        income,
+        expense,
+        totalVolume: income + expense
+      });
     }
-  };
 
-  const handleLoginSuccess = () => {
-    setIsAdmin(auth.isAdmin());
-    if (pendingPath) {
-      navigate(pendingPath);
-      setPendingPath(null);
+    return result;
+  }, [monthlyTransactions, daysInSelectedMonth]);
+
+  // Tìm giá trị lớn nhất của cột biểu đồ để chuẩn hóa chiều cao
+  const maxDailyVolume = useMemo(() => {
+    const maxVal = Math.max(...dailyChartData.map(d => d.totalVolume), 0);
+    return maxVal > 0 ? maxVal : 500000;
+  }, [dailyChartData]);
+
+  // Top thành viên đóng góp nhiều nhất
+  const topContributors: TopContributor[] = useMemo(() => {
+    const map = new Map<string, number>();
+
+    // Tính tổng thu theo thành viên
+    transactions
+      .filter(t => t.type === 'thu' && t.status === 'completed')
+      .forEach(t => {
+        const name = t.personName || 'Thành viên';
+        const current = map.get(name) || 0;
+        map.set(name, current + (t.amount || 0));
+      });
+
+    const list: TopContributor[] = Array.from(map.entries())
+      .map(([name, amount], idx) => ({ name, amount, rank: idx + 1 }))
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 5);
+
+    // Dữ liệu mẫu nếu chưa có giao dịch
+    if (list.length === 0) {
+      return [
+        { name: 'Nguyễn Văn An', amount: 1500000, rank: 1 },
+        { name: 'Trần Thị Bình', amount: 1200000, rank: 2 },
+        { name: 'Lê Hoàng Long', amount: 950000, rank: 3 },
+        { name: 'Phạm Minh Đức', amount: 800000, rank: 4 },
+        { name: 'Vũ Quốc Bảo', amount: 650000, rank: 5 },
+      ];
     }
-  };
 
-  const handleModalClose = () => {
-    setShowLoginModal(false);
-    setPendingPath(null);
-  };
+    return list.map((item, idx) => ({ ...item, rank: idx + 1 }));
+  }, [transactions]);
 
-  const currentUser = auth.getCurrentUser();
+  // Phân loại nguồn mục đích quỹ
+  const fundCategories = useMemo(() => {
+    return [
+      { name: 'Đóng quỹ định kỳ tháng', percent: 65, color: '#10b981' },
+      { name: 'Đóng góp hoạt động / Tiệc', percent: 20, color: '#3b82f6' },
+      { name: 'Tài trợ / Ủng hộ đặc biệt', percent: 10, color: '#f59e0b' },
+      { name: 'Khoản thu khác', percent: 5, color: '#8b5cf6' },
+    ];
+  }, []);
+
+  // Trạng thái thu chi trong tháng
+  const transactionStatusBreakdown = useMemo(() => {
+    const totalCount = monthlyTransactions.length || 1;
+    const completedCount = monthlyTransactions.filter(t => t.status === 'completed').length;
+    const pendingCount = monthlyTransactions.filter(t => t.status === 'pending').length;
+
+    const completedPercent = Math.round((completedCount / totalCount) * 100) || (monthlyTransactions.length === 0 ? 100 : 0);
+    const pendingPercent = monthlyTransactions.length > 0 ? Math.round((pendingCount / totalCount) * 100) : 0;
+
+    return [
+      { name: 'Giao dịch đã hoàn thành', percent: completedPercent, color: '#16a34a' },
+      { name: 'Giao dịch đang chờ thu/duyệt', percent: pendingPercent, color: '#ef4444' },
+    ];
+  }, [monthlyTransactions]);
+
+  const handleFilterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  };
 
   return (
-    <div className="dash-root">
-      {/* ===== ANIMATED BACKGROUND ===== */}
-      <div className="dash-bg">
-        <div className="bg-orb bg-orb-1"></div>
-        <div className="bg-orb bg-orb-2"></div>
-        <div className="bg-orb bg-orb-3"></div>
-        <div className="bg-orb bg-orb-4"></div>
-        <div className="bg-mesh"></div>
+    <div className="nasani-dashboard">
+      {/* Banner tổng quan số dư Quỹ */}
+      <div className="nasani-fund-banner">
+        <div className="nasani-fund-info">
+          {currentUser?.avatar ? (
+            <img
+              src={currentUser.avatar}
+              alt={currentUser.displayName || currentUser.username || ''}
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2.5px solid #10b981',
+                boxShadow: '0 3px 10px rgba(16,185,129,0.3)',
+                flexShrink: 0
+              }}
+            />
+          ) : currentUser?.photoURL ? (
+            <img
+              src={currentUser.photoURL}
+              alt={currentUser.displayName || currentUser.username || ''}
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2px solid white',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.15)',
+                flexShrink: 0
+              }}
+            />
+          ) : (
+            <span className="nasani-fund-icon">🏛️</span>
+          )}
+          <div>
+            <div className="nasani-fund-title">
+              Tổng Quỹ Phòng Nasani: {loading ? 'Đang tải...' : formatCurrency(fundStats.currentBalance)}
+            </div>
+            <div className="nasani-fund-sub">
+              Tài khoản: <strong>{currentUser?.displayName || currentUser?.username}</strong> — Vai trò:{' '}
+              <strong style={{ color: isAdmin ? '#dc2626' : '#0284c7' }}>
+                {isAdmin ? '👑 Quản trị viên (Admin)' : '👤 Thành viên (User)'}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <Link to="/quy-phong" className="nasani-fund-btn">
+          <span>Xem chi tiết sổ quỹ</span>
+          <span>→</span>
+        </Link>
       </div>
 
-      {/* ===== FLOATING PARTICLES ===== */}
-      {[...Array(12)].map((_, i) => (
-        <div
-          key={i}
-          className="dash-particle"
-          style={{
-            left: `${(i * 8.33) % 100}%`,
-            animationDelay: `${i * 1.2}s`,
-            animationDuration: `${12 + (i % 5) * 3}s`,
-            width: `${3 + (i % 4)}px`,
-            height: `${3 + (i % 4)}px`,
-          }}
-        />
-      ))}
+      {/* Hàng chính: Thống kê tổng quan Quỹ (Trái) & Top đóng góp (Phải) */}
+      <div className="nasani-dash-grid-top">
+        {/* Card Trái: Biểu đồ và 4 thẻ chỉ số Quỹ */}
+        <div className="nasani-card">
+          <div className="nasani-card-header">
+            <h2 className="nasani-card-title">Tổng quan Quỹ Phòng</h2>
+            <span className="nasani-card-meta">
+              Tháng {month.toString().padStart(2, '0')}/{year}
+            </span>
+          </div>
 
-      {/* ===== HEADER ===== */}
-      <header className="dash-header">
-        <div className="dash-header-inner">
-          {/* Logo / Brand */}
-          <div className="dash-brand">
-            <div className="brand-icon">🏠</div>
-            <div className="brand-text">
-              <span className="brand-name">Quỹ Phòng</span>
-              <span className="brand-sub">Hệ thống quản lý</span>
+          {/* 4 Thẻ chỉ số tài chính của Quỹ */}
+          <div className="nasani-stats-row">
+            <div className="nasani-stat-box">
+              <div className="nasani-stat-circle pink">💰</div>
+              <div className="nasani-stat-info">
+                <span className="nasani-stat-val" style={{ color: fundStats.currentBalance >= 0 ? '#16a34a' : '#dc2626' }}>
+                  {formatCurrency(fundStats.currentBalance)}
+                </span>
+                <span className="nasani-stat-lbl">Số dư hiện tại</span>
+              </div>
+            </div>
+
+            <div className="nasani-stat-box">
+              <div className="nasani-stat-circle cyan">📈</div>
+              <div className="nasani-stat-info">
+                <span className="nasani-stat-val" style={{ color: '#0284c7' }}>
+                  {formatCurrency(fundStats.monthIncome)}
+                </span>
+                <span className="nasani-stat-lbl">Tổng thu tháng {month}</span>
+              </div>
+            </div>
+
+            <div className="nasani-stat-box">
+              <div className="nasani-stat-circle coral">📉</div>
+              <div className="nasani-stat-info">
+                <span className="nasani-stat-val" style={{ color: '#f43f5e' }}>
+                  {formatCurrency(fundStats.monthExpense)}
+                </span>
+                <span className="nasani-stat-lbl">Tổng chi tháng {month}</span>
+              </div>
+            </div>
+
+            <div className="nasani-stat-box">
+              <div className="nasani-stat-circle green">⏳</div>
+              <div className="nasani-stat-info">
+                <span className="nasani-stat-val" style={{ color: '#ca8a04' }}>
+                  {formatCurrency(fundStats.monthPending)}
+                </span>
+                <span className="nasani-stat-lbl">Chờ thu tháng {month}</span>
+              </div>
             </div>
           </div>
 
-          {/* Clock */}
-          <div className="dash-clock">
-            <div className="clock-time">
-              {time.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          {/* Bộ lọc Tháng & Năm */}
+          <form className="nasani-filter-bar" onSubmit={handleFilterSubmit}>
+            <select
+              className="nasani-input-filter"
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+              title="Chọn tháng"
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
+                <option key={m} value={m}>
+                  Tháng {m}
+                </option>
+              ))}
+            </select>
+
+            <select
+              className="nasani-input-filter"
+              value={year}
+              onChange={(e) => setYear(Number(e.target.value))}
+              title="Chọn năm"
+            >
+              {[2024, 2025, 2026, 2027].map(y => (
+                <option key={y} value={y}>
+                  Năm {y}
+                </option>
+              ))}
+            </select>
+
+            <button type="submit" className="nasani-btn-submit-filter">
+              Thống kê
+            </button>
+          </form>
+
+          {/* Biểu đồ hoạt động thu chi theo ngày (D1 - D30) */}
+          <div className="nasani-chart-container">
+            {/* Đường lưới ngang */}
+            <div className="nasani-chart-grid-line" style={{ top: '0%' }}></div>
+            <div className="nasani-chart-grid-line" style={{ top: '25%' }}></div>
+            <div className="nasani-chart-grid-line" style={{ top: '50%' }}></div>
+            <div className="nasani-chart-grid-line" style={{ top: '75%' }}></div>
+
+            {/* Trục Tung (Y-Axis) */}
+            <div className="nasani-chart-axis-y">
+              <span>{Math.round(maxDailyVolume / 1000)}k</span>
+              <span>{Math.round((maxDailyVolume * 0.75) / 1000)}k</span>
+              <span>{Math.round((maxDailyVolume * 0.5) / 1000)}k</span>
+              <span>{Math.round((maxDailyVolume * 0.25) / 1000)}k</span>
+              <span>0</span>
             </div>
-            <div className="clock-date">
-              {time.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+
+            {/* Cột các ngày */}
+            <div className="nasani-chart-bars-wrap">
+              {dailyChartData.map((d) => {
+                const heightPercent = (d.totalVolume / maxDailyVolume) * 100;
+                return (
+                  <div
+                    key={d.day}
+                    className="nasani-bar-col"
+                    onMouseEnter={() => setHoveredBar(d)}
+                    onMouseLeave={() => setHoveredBar(null)}
+                  >
+                    {hoveredBar?.day === d.day && (
+                      <div className="nasani-bar-tooltip">
+                        <strong>Ngày {d.label}</strong>:
+                        {d.income > 0 && <div>Thu: +{formatCurrency(d.income)}</div>}
+                        {d.expense > 0 && <div>Chi: -{formatCurrency(d.expense)}</div>}
+                        {d.income === 0 && d.expense === 0 && <div>Không có giao dịch</div>}
+                      </div>
+                    )}
+                    <div
+                      className="nasani-bar-pill"
+                      style={{
+                        height: `${Math.max(heightPercent, 3)}%`,
+                        backgroundColor: d.income > 0 ? '#e86161' : d.expense > 0 ? '#f59e0b' : '#e5e7eb'
+                      }}
+                    ></div>
+                    <span className="nasani-bar-lbl">{d.label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Card Phải: Top thành viên đóng góp nhiều nhất */}
+        <div className="nasani-card">
+          <div className="nasani-card-header">
+            <div>
+              <h2 className="nasani-card-title">Top đóng góp quỹ nhiều nhất</h2>
+              <span className="nasani-card-meta">
+                Tính đến ngày {new Date().toLocaleDateString('vi-VN')}
+              </span>
             </div>
           </div>
 
-          {/* Admin Status + Button */}
-          <div className="dash-admin-status">
-            {isAdmin && currentUser && (
-              <div className="admin-badge">
-                <span className="admin-avatar">{currentUser.username.charAt(0).toUpperCase()}</span>
-                <div className="admin-info">
-                  <span className="admin-name">{currentUser.username}</span>
-                  <span className="admin-role">⭐ Quản trị viên</span>
+          <div className="nasani-ip-list">
+            {topContributors.map((item) => (
+              <div key={item.rank} className="nasani-ip-item">
+                <div className="nasani-ip-left">
+                  <span className="nasani-ip-badge-pin" style={{ background: item.rank === 1 ? '#fef3c7' : '#fee2e2', borderColor: item.rank === 1 ? '#f59e0b' : '#fca5a5' }}>
+                    {item.rank === 1 ? '🥇 #1' : item.rank === 2 ? '🥈 #2' : item.rank === 3 ? '🥉 #3' : `🎖️ #${item.rank}`}
+                  </span>
+                  <span className="nasani-ip-addr" style={{ fontFamily: 'inherit', fontWeight: 600 }}>
+                    {item.name}
+                  </span>
+                </div>
+                <span className="nasani-ip-count" style={{ color: '#16a34a' }}>
+                  {formatCurrency(item.amount)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Hàng Dưới: 2 Card Phân loại Quỹ & Trạng thái */}
+      <div className="nasani-dash-grid-bottom">
+        {/* Card: Phân loại cơ cấu Quỹ */}
+        <div className="nasani-card">
+          <div className="nasani-card-header">
+            <div>
+              <h2 className="nasani-card-title">Cơ cấu nguồn thu Quỹ</h2>
+              <span className="nasani-card-meta">Theo tỷ lệ phân bổ tháng {month}</span>
+            </div>
+          </div>
+
+          <div className="nasani-metric-progress-list">
+            {fundCategories.map((c, idx) => (
+              <div key={idx} className="nasani-metric-row">
+                <div className="nasani-metric-header">
+                  <span>{c.name}</span>
+                  <strong>{c.percent}%</strong>
+                </div>
+                <div className="nasani-metric-track">
+                  <div
+                    className="nasani-metric-fill"
+                    style={{ width: `${c.percent}%`, backgroundColor: c.color }}
+                  ></div>
                 </div>
               </div>
-            )}
-            <button
-              className={`btn-admin-toggle ${isAdmin ? 'is-admin' : ''}`}
-              onClick={handleAdminClick}
-              id="btn-admin-toggle"
-            >
-              {isAdmin ? (
-                <><span>🚪</span> Đăng xuất</>
-              ) : (
-                <><span>🔑</span> Admin</>
-              )}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* ===== MAIN CONTENT ===== */}
-      <main className="dash-main">
-
-        {/* ===== WELCOME SECTION ===== */}
-        <section className="dash-welcome">
-          <div className="welcome-glass">
-            <div className="welcome-glass-shine"></div>
-            
-            {/* Left Column */}
-            <div className="welcome-left">
-              <div className="welcome-badge-pill">
-                Nền tảng quản lý tài chính thế hệ mới
-              </div>
-              <h1 className="welcome-main-title">
-                Quản Lý Tài Chính Cùng <span className="text-highlight">Quỹ Phòng</span>.
-              </h1>
-              <p className="welcome-subtitle-text">
-                Theo dõi số dư, quản lý thu chi và thống kê giao dịch của quỹ nhóm một cách chính xác, minh bạch và trực quan.
-              </p>
-              <button 
-                className="explore-btn-mock"
-                onClick={() => {
-                  document.getElementById('card-quy-phong')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                Khám phá quỹ phòng
-              </button>
-            </div>
-
-            {/* Right Column (Handwritten Welcome Drawing SVG) */}
-            <div className="welcome-right">
-              <div className="welcome-svg-container">
-                <svg viewBox="0 0 320 120" style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
-                  <defs>
-                    <linearGradient id="rainbowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#10b981" />
-                      <stop offset="20%" stopColor="#84cc16" />
-                      <stop offset="40%" stopColor="#f59e0b" />
-                      <stop offset="60%" stopColor="#ef4444" />
-                      <stop offset="80%" stopColor="#a855f7" />
-                      <stop offset="100%" stopColor="#3b82f6" />
-                    </linearGradient>
-                  </defs>
-                  <text 
-                    x="10" 
-                    y="85" 
-                    fontFamily="'Pacifico', cursive" 
-                    fontSize="72" 
-                    fill="none" 
-                    stroke="url(#rainbowGrad)" 
-                    strokeWidth="3.5"
-                    className="welcome-writing-text"
-                  >
-                    Welcome
-                  </text>
-                </svg>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* ===== USER SECTION ===== */}
-        <section className="dash-section">
-          <div className="section-header">
-            <div className="section-line"></div>
-            <h2 className="section-title">
-              <span className="section-icon">🌟</span>
-              Chức năng chung
-            </h2>
-            <div className="section-line"></div>
-          </div>
-          <div className="cards-grid cards-grid-user">
-            {userItems.map((item) => (
-              <MenuCard
-                key={item.id}
-                item={item}
-                isHovered={hoveredId === item.id}
-                onHover={setHoveredId}
-                onClick={handleNavigate}
-                locked={false}
-              />
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* ===== ADMIN SECTION ===== */}
-        <section className="dash-section dash-section-admin">
-          <div className="section-header">
-            <div className="section-line admin-line"></div>
-            <h2 className="section-title admin-title">
-              <span className="section-icon">🛡️</span>
-              Khu vực Quản trị
-              {!isAdmin && <span className="lock-badge">🔒</span>}
-            </h2>
-            <div className="section-line admin-line"></div>
+        {/* Card: Trạng thái giao dịch Quỹ */}
+        <div className="nasani-card">
+          <div className="nasani-card-header">
+            <div>
+              <h2 className="nasani-card-title">Tình trạng nộp quỹ</h2>
+              <span className="nasani-card-meta">Tiến độ thu nộp tháng {month}</span>
+            </div>
           </div>
 
-          {!isAdmin && (
-            <div className="admin-locked-hint">
-              <div className="hint-glass">
-                <div className="hint-glass-shine"></div>
-                <span>🔐</span>
-                <p>Nhấn vào bất kỳ chức năng nào bên dưới để đăng nhập với tài khoản quản trị viên</p>
+          <div className="nasani-metric-progress-list">
+            {transactionStatusBreakdown.map((item, idx) => (
+              <div key={idx} className="nasani-metric-row">
+                <div className="nasani-metric-header">
+                  <span>{item.name}</span>
+                  <strong>{item.percent}%</strong>
+                </div>
+                <div className="nasani-metric-track">
+                  <div
+                    className="nasani-metric-fill"
+                    style={{ width: `${item.percent}%`, backgroundColor: item.color }}
+                  ></div>
+                </div>
               </div>
-            </div>
-          )}
-
-          <div className="cards-grid cards-grid-admin">
-            {adminItems.map((item) => (
-              <MenuCard
-                key={item.id}
-                item={item}
-                isHovered={hoveredId === item.id}
-                onHover={setHoveredId}
-                onClick={handleNavigate}
-                locked={!isAdmin}
-              />
             ))}
           </div>
-        </section>
-      </main>
-
-      {/* ===== ADMIN LOGIN MODAL ===== */}
-      <AdminLoginModal
-        isOpen={showLoginModal}
-        onClose={handleModalClose}
-        onSuccess={handleLoginSuccess}
-        targetPath={pendingPath || undefined}
-      />
-    </div>
-  );
-};
-
-// ===== MENU CARD COMPONENT =====
-interface MenuCardProps {
-  item: MenuItem;
-  isHovered: boolean;
-  onHover: (id: string | null) => void;
-  onClick: (item: MenuItem) => void;
-  locked: boolean;
-}
-
-const MenuCard: React.FC<MenuCardProps> = ({ item, isHovered, onHover, onClick, locked }) => {
-  return (
-    <div
-      className={`menu-card ${locked ? 'menu-card-locked' : ''} ${isHovered ? 'hovered' : ''}`}
-      onClick={() => onClick(item)}
-      onMouseEnter={() => onHover(item.id)}
-      onMouseLeave={() => onHover(null)}
-      id={`card-${item.id}`}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onClick(item)}
-      aria-label={`${item.title}: ${item.description}`}
-      style={{ 
-        '--beam-color-1': item.color1, 
-        '--beam-color-2': item.color2 
-      } as React.CSSProperties}
-    >
-      {/* Rotating border beam */}
-      <div className="card-border-beam"></div>
-
-      {/* Glass layers */}
-      <div className="card-glass-base"></div>
-      <div className="card-glass-shine"></div>
-      <div className="card-glass-border"></div>
-
-      {/* Color accent blob */}
-      <div
-        className="card-color-blob"
-        style={{ background: item.gradient }}
-      ></div>
-
-      {/* Lock indicator */}
-      {locked && (
-        <div className="card-lock-overlay">
-          <span className="lock-icon">🔒</span>
-        </div>
-      )}
-
-      {/* Card content */}
-      <div className="card-content">
-        <div
-          className="card-icon-wrap"
-          style={{ background: item.gradient }}
-        >
-          <span className="card-icon">{item.icon}</span>
-          <div className="icon-glow" style={{ background: item.gradient }}></div>
-        </div>
-        <div className="card-info">
-          <h3 className="card-title">{item.title}</h3>
-          <p className="card-desc">{item.description}</p>
-        </div>
-        <div className="card-arrow">
-          {locked ? '🔐' : '›'}
         </div>
       </div>
-
-      {/* Hover ripple */}
-      <div className="card-ripple"></div>
     </div>
   );
 };
