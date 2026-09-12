@@ -1,5 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
 
+export type TransactionStatus = 'completed' | 'waiting' | 'pending';
+
 export interface Transaction {
   id?: string;
   date: string;
@@ -9,6 +11,6 @@ export interface Transaction {
   description: string;
   personId: string;
   personName: string;
-  status: 'pending' | 'completed';
+  status: TransactionStatus;
   createdAt?: Timestamp;
 }

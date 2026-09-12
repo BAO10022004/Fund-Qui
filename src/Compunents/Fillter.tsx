@@ -335,8 +335,9 @@ function Filter({
             <label>📊 Trạng thái</label>
             <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
               <option value="all">Tất cả</option>
-              <option value="pending">Chưa thu</option>
-              <option value="completed">Đã thu</option>
+              <option value="completed">Hoàn thành</option>
+              <option value="waiting">Chờ xác nhận</option>
+              <option value="pending">Chưa hoàn thành</option>
             </select>
           </div>
         </div>

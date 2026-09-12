@@ -39,8 +39,9 @@ function FillterManageTransaction({
           <label>📋 Trạng thái</label>
           <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="filter-select">
             <option value="all">Tất cả</option>
-            <option value="pending">Đang chờ</option>
             <option value="completed">Hoàn thành</option>
+            <option value="waiting">Chờ xác nhận</option>
+            <option value="pending">Chưa hoàn thành</option>
           </select>
         </div>
 

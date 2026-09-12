@@ -21,7 +21,7 @@ import FillterManageTransaction from '../Compunents/FillterManageTransaction';
 import LoadingSpinner from '../Compunents/LoadingSpinner';
 import GridDataTransaction from '../Compunents/GridDataTransaction';
 import AddTransaction from '../Compunents/AddTransaction';
-import type { Transaction } from '../models/Transaction';
+import type { Transaction, TransactionStatus } from '../models/Transaction';
 import { logCreate, logUpdate, logDelete } from '../services/HistoryService';
 import { Auth } from '../Auth';
 const ManageTransactions: React.FC = () => {
@@ -45,7 +45,7 @@ const ManageTransactions: React.FC = () => {
     type: 'thu' as 'thu' | 'chi',
     description: '',
     personId: '',
-    status: 'pending' as 'pending' | 'completed'
+    status: 'pending' as TransactionStatus
   });
 
   useEffect(() => {
@@ -178,7 +178,7 @@ const ManageTransactions: React.FC = () => {
   // Statistics
   const stats = {
     total: filteredTransactions.length,
-    pending: filteredTransactions.filter(t => t.status === 'pending').length,
+    pending: filteredTransactions.filter(t => t.status !== 'completed').length,
     completed: filteredTransactions.filter(t => t.status === 'completed').length,
     totalThu: filteredTransactions.filter(t => t.type === 'thu').reduce((sum, t) => sum + t.amount, 0),
     totalChi: filteredTransactions.filter(t => t.type === 'chi').reduce((sum, t) => sum + t.amount, 0)

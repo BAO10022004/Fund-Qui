@@ -4,6 +4,7 @@ import { getAccountByUsername } from '../services/AccountService';
 import { auth } from '../Auth';
 import type { Account } from '../models/Account';
 import { logLogin } from '../services/HistoryService';
+import { recordLoginLog } from '../services/LoginService';
 import { signInWithPopup } from 'firebase/auth';
 import { firebaseAuth, googleProvider } from '../firebase';
 import '../assets/AdminLoginModal.css';
@@ -35,7 +36,8 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onSu
       setError('');
 
       const result = await signInWithPopup(firebaseAuth, googleProvider);
-      const email = result.user.email;
+      const user = result.user;
+      const email = user.email;
 
       if (!email) {
         throw new Error('Không thể lấy email từ tài khoản Google của bạn.');
@@ -46,15 +48,57 @@ const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isOpen, onClose, onSu
 
       if (account) {
         if (account.role !== 'admin') {
+          await recordLoginLog({
+            email,
+            username: account.username || email,
+            displayName: account.userName || user.displayName || email,
+            avatar: user.photoURL,
+            role: account.role || 'user',
+            status: 'blocked',
+            reason: 'Tài khoản không có quyền Admin'
+          });
           setError('Không có quyền truy cập!');
           setTimeout(() => setError(''), 4000);
           return;
         }
+
+        if (account.isBlocked) {
+          await recordLoginLog({
+            email,
+            username: account.username || email,
+            displayName: account.userName || user.displayName || email,
+            avatar: user.photoURL,
+            role: account.role || 'admin',
+            status: 'blocked',
+            reason: 'Tài khoản đã bị khóa'
+          });
+          setError('Tài khoản đã bị tạm khóa!');
+          setTimeout(() => setError(''), 4000);
+          return;
+        }
+
         auth.login(account.username, account.role, account.codePerson);
+        await recordLoginLog({
+          email,
+          username: account.username || email,
+          displayName: account.userName || user.displayName || email,
+          avatar: user.photoURL,
+          role: 'admin',
+          status: 'success'
+        });
         logLogin(account.username);
         onSuccess();
         onClose();
       } else {
+        await recordLoginLog({
+          email,
+          username: email,
+          displayName: user.displayName || email,
+          avatar: user.photoURL,
+          role: 'user',
+          status: 'blocked',
+          reason: 'Email chưa được đăng ký trong hệ thống'
+        });
         setError('Tài khoản Google chưa được đăng ký trong hệ thống!');
         setTimeout(() => setError(''), 4000);
       }

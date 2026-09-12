@@ -1,5 +1,5 @@
 import React from "react";
-import type { Transaction } from "../models/Transaction";
+import type { Transaction, TransactionStatus } from "../models/Transaction";
 import type { Person } from "../models/Person";
 
 function AddTransaction({ setShowModal, formData, setFormData, editingTransaction, handleSubmit, persons }:
@@ -10,8 +10,7 @@ function AddTransaction({ setShowModal, formData, setFormData, editingTransactio
             type: 'thu' | 'chi';
             description: string;
             personId: string;
-
-            status: 'pending' | 'completed';
+            status: TransactionStatus;
         };
         setFormData: React.Dispatch<React.SetStateAction<{
             date: string;
@@ -19,7 +18,7 @@ function AddTransaction({ setShowModal, formData, setFormData, editingTransactio
             type: 'thu' | 'chi';
             description: string;
             personId: string;
-            status: 'pending' | 'completed';
+            status: TransactionStatus;
         }>>;
         editingTransaction: Transaction | null;
         handleSubmit: () => void;
@@ -88,10 +87,11 @@ function AddTransaction({ setShowModal, formData, setFormData, editingTransactio
                 <label>📋 Trạng thái</label>
                 <select
                   value={formData.status}
-                  onChange={e => setFormData({ ...formData, status: e.target.value as 'pending' | 'completed' })}
+                  onChange={e => setFormData({ ...formData, status: e.target.value as TransactionStatus })}
                 >
-                  <option value="pending">⏳ Đang chờ</option>
                   <option value="completed">✅ Hoàn thành</option>
+                  <option value="waiting">🕒 Chờ xác nhận</option>
+                  <option value="pending">⏳ Chưa hoàn thành</option>
                 </select>
               </div>
 

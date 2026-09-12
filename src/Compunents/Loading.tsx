@@ -1,55 +1,62 @@
 import React from 'react';
-import "../assets/Loader.css";
+import '../assets/Loader.css';
 
-function Loader() {
+interface LoaderProps {
+  title?: string;
+  subtitle?: string;
+}
+
+const Loader: React.FC<LoaderProps> = ({
+  title = 'Đang tải dữ liệu quỹ...',
+  subtitle = 'Hệ thống đang đồng bộ thông tin thu chi mới nhất'
+}) => {
   return (
-    <div className="loader-container">
-      {/* Animated background particles */}
-      <div className="bg-particles">
-        <div className="particle particle-1"></div>
-        <div className="particle particle-2"></div>
-        <div className="particle particle-3"></div>
-      </div>
+    <div className="nasani-loader-container">
+      {/* Vùng ánh sáng ambient tinh tế */}
+      <div className="nasani-loader-ambient"></div>
 
-      {/* Floating elements */}
-      <div className="floating-shapes">
-        <div className="shape shape-1"></div>
-        <div className="shape shape-2"></div>
-        <div className="shape shape-3"></div>
-        <div className="shape shape-4"></div>
-      </div>
-
-      {/* Main loader */}
-      <div className="loader-content">
-        {/* Spinning rings */}
-        <div className="spinner-container">
-          <div className="spinner-ring ring-1"></div>
-          <div className="spinner-ring ring-2"></div>
-          <div className="spinner-ring ring-3"></div>
-          <div className="hourglass-icon">⏳</div>
-        </div>
-
-        {/* Text content */}
-        <div className="loader-text">
-          <h2 className="loading-title">Đang tải dữ liệu từ Firebase...</h2>
-          
-          {/* Loading dots */}
-          <div className="loading-dots">
-            <span className="dot"></span>
-            <span className="dot"></span>
-            <span className="dot"></span>
+      {/* Thẻ loading chính tông sáng Nasani */}
+      <div className="nasani-loader-card">
+        {/* Vòng quay hiệu ứng & Icon ví quỹ */}
+        <div className="nasani-loader-visual">
+          <div className="nasani-loader-spinner-outer"></div>
+          <div className="nasani-loader-spinner-inner"></div>
+          <div className="nasani-loader-icon-box">
+            <svg
+              className="nasani-loader-svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="5" width="20" height="14" rx="3" />
+              <path d="M2 10h20" />
+              <circle cx="16" cy="14" r="1.5" fill="currentColor" />
+            </svg>
           </div>
-          
-          <p className="loading-subtitle">Vui lòng đợi trong giây lát</p>
         </div>
 
-        {/* Progress bar */}
-        <div className="progress-bar">
-          <div className="progress-fill"></div>
+        {/* Nội dung thông báo */}
+        <div className="nasani-loader-info">
+          <h3 className="nasani-loader-title">{title}</h3>
+          <p className="nasani-loader-sub">{subtitle}</p>
+        </div>
+
+        {/* Thanh tiến trình gradient trượt mượt mà */}
+        <div className="nasani-loader-track">
+          <div className="nasani-loader-bar"></div>
+        </div>
+
+        {/* Huy hiệu trạng thái kết nối */}
+        <div className="nasani-loader-badge">
+          <span className="nasani-loader-pulse-dot"></span>
+          <span>Đang đồng bộ dữ liệu</span>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Loader;

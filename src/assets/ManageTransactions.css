@@ -92,7 +92,7 @@
   margin-bottom: 30px;
 }
 
-.stat-card {
+.stats-grid .stat-card {
   background: white;
   padding: 20px;
   border-radius: 12px;
@@ -103,7 +103,7 @@
   transition: transform 0.2s ease;
 }
 
-.stat-card:hover {
+.stats-grid .stat-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
@@ -669,16 +669,23 @@
   line-height: 1;
 }
 
+.status-pill.completed,
 .status-pill.active {
   background: #ecfdf5;
-  color: #10b981;
-  border: 1px solid #a7f3d0;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.status-pill.waiting {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
 }
 
 .status-pill.pending {
-  background: #000000;
-  color: #ffffff;
-  border: 1px solid #000000;
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
 }
 
 .status-pill.inactive {

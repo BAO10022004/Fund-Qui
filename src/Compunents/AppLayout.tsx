@@ -3,6 +3,9 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../Auth';
 import { uploadAvatarToFirebase } from '../services/ImageService';
 import { findAccountByGoogleEmail, updateAccount } from '../services/AccountService';
+import NotificationDropdown from './NotificationDropdown';
+import { subscribeNotifications, type PaymentNotification } from '../services/NotificationService';
+import { recordLoginLog } from '../services/LoginService';
 import '../assets/nasaniLayout.css';
 
 interface NavItem {
@@ -26,6 +29,7 @@ const MENU_GROUPS: MenuGroup[] = [
       { id: 'dashboard', label: 'Bảng thống kê', path: '/', icon: '📊' },
       { id: 'quy-phong', label: 'Quỹ phòng', path: '/quy-phong', icon: '💰' },
       { id: 'transactions', label: 'Quản lý giao dịch', path: '/admin/transactions', icon: '💳', adminOnly: true },
+      { id: 'payment-settings', label: 'Cấu hình thanh toán', path: '/admin/payment-settings', icon: '⚙️', adminOnly: true },
     ]
   },
   {
@@ -34,6 +38,7 @@ const MENU_GROUPS: MenuGroup[] = [
     items: [
       { id: 'persons', label: 'Người dùng', path: '/admin/persons', icon: '👥', adminOnly: true },
       { id: 'accounts', label: 'Tài khoản', path: '/accounts', icon: '🔑', adminOnly: true },
+      { id: 'logins', label: 'Quản lý Đăng nhập', path: '/admin/logins', icon: '🛡️', adminOnly: true },
     ]
   },
   {
@@ -55,9 +60,42 @@ const AppLayout: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const [notifications, setNotifications] = useState<PaymentNotification[]>([]);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
   const [currentUser, setCurrentUser] = useState<any>(auth.getCurrentUser());
   const isAdmin = auth.isAdmin();
+
+  // Lắng nghe thông báo thanh toán thời gian thực từ Firestore
+  useEffect(() => {
+    const unsubscribe = subscribeNotifications((notifs) => {
+      setNotifications(notifs);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Tự động ghi nhận phiên đăng nhập hiện tại nếu chưa ghi trong session này
+  useEffect(() => {
+    if (auth.isAuthenticated()) {
+      const isSessionLogged = sessionStorage.getItem('nasani_session_logged');
+      if (!isSessionLogged) {
+        const user = auth.getCurrentUser();
+        if (user && (user.username || user.email)) {
+          sessionStorage.setItem('nasani_session_logged', 'true');
+          recordLoginLog({
+            email: user.email || user.username || 'user',
+            username: user.username || user.email || 'user',
+            displayName: user.displayName || user.personName || user.username || 'Thành viên',
+            avatar: user.avatar || user.photoURL,
+            role: auth.isAdmin() ? 'admin' : 'user',
+            status: 'success'
+          }).catch(err => console.warn('Could not record active session:', err));
+        }
+      }
+    }
+  }, []);
 
   // Lắng nghe thay đổi avatar hoặc tài khoản từ bất cứ đâu trong hệ thống
   useEffect(() => {
@@ -74,12 +112,16 @@ const AppLayout: React.FC = () => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowProfileMenu(false);
       }
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setShowNotifDropdown(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = () => {
+    sessionStorage.removeItem('nasani_session_logged');
     auth.logout();
     navigate('/login', { replace: true });
   };
@@ -118,6 +160,7 @@ const AppLayout: React.FC = () => {
   };
 
   const displayName = currentUser?.displayName || currentUser?.personName || (isAdmin ? 'Administrator' : 'Thành viên');
+  const waitingNotifsCount = notifications.filter(n => n.status === 'waiting').length;
 
   return (
     <div className="nasani-admin-wrapper">
@@ -232,14 +275,27 @@ const AppLayout: React.FC = () => {
               </button>
             )}
 
-            <button
-              className="nasani-action-icon-btn"
-              title="Thông báo hệ thống"
-              onClick={() => alert('Hiện tại chưa có thông báo mới.')}
-            >
-              🔔
-              <span className="nasani-bell-badge">0</span>
-            </button>
+            {/* Notification Bell & Dropdown */}
+            <div style={{ position: 'relative' }} ref={notifRef}>
+              <button
+                className="nasani-action-icon-btn"
+                title={waitingNotifsCount > 0 ? `Có ${waitingNotifsCount} yêu cầu thanh toán chờ duyệt` : 'Thông báo hệ thống'}
+                onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+              >
+                🔔
+                {waitingNotifsCount > 0 && (
+                  <span className="nasani-bell-badge">{waitingNotifsCount}</span>
+                )}
+              </button>
+              {showNotifDropdown && (
+                <NotificationDropdown
+                  notifications={notifications}
+                  isAdmin={isAdmin}
+                  adminName={displayName}
+                  onClose={() => setShowNotifDropdown(false)}
+                />
+              )}
+            </div>
 
             {/* Profile Dropdown */}
             <div style={{ position: 'relative' }} ref={dropdownRef}>

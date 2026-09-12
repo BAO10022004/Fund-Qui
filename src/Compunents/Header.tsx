@@ -11,7 +11,7 @@ function Header({ stats }: {
   };
 }) {
   const formatCurrency = (amount: number): string =>
-    new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+    new Intl.NumberFormat('vi-VN').format(amount) + '\u00A0đ';
 
   return (
     <div className="qp-stats">

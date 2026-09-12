@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { firebaseAuth, googleProvider } from '../firebase';
-import { findAccountByGoogleEmail, getAllAccounts, createAccount } from '../services/AccountService';
+import { findAccountByGoogleEmail, getAllAccounts, createAccount, updateAccount } from '../services/AccountService';
 import { logLogin } from '../services/HistoryService';
+import { recordLoginLog } from '../services/LoginService';
+import { Timestamp } from 'firebase/firestore';
 import { auth } from '../Auth';
 import type { Account } from '../models/Account';
 import '../assets/nasaniLogin.css';
@@ -42,37 +44,61 @@ const Login: React.FC = () => {
       // Tra cứu tài khoản trong danh sách hệ thống
       let account: Account | null = await findAccountByGoogleEmail(email);
 
+      // 🛑 CHỈ CHO PHÉP EMAIL ĐÃ CÓ TRONG HỆ THỐNG - TẤT CẢ EMAIL KHÁC ĐỀU BỊ CHẶN
       if (!account) {
-        // Tự động tạo tài khoản với vai trò 'user' (hoặc 'admin' nếu là tài khoản đầu tiên)
-        const allAccounts = await getAllAccounts();
-        const initialRole: 'admin' | 'user' = allAccounts.length === 0 ? 'admin' : 'user';
-        const codePerson = 'USER_' + Math.random().toString(36).substring(2, 7).toUpperCase();
-        const displayName = user.displayName || email;
-
-        const newAccountData = {
+        await recordLoginLog({
+          email,
           username: email,
-          userName: displayName,
-          personName: displayName,
-          password: 'GOOGLE_AUTH_ACCOUNT',
-          codePerson: codePerson,
-          role: initialRole
-        };
-
-        try {
-          const docId = await createAccount(newAccountData);
-          account = {
-            id: docId,
-            ...newAccountData
-          };
-        } catch (createErr) {
-          console.warn('Could not auto-create account in DB:', createErr);
-          account = {
-            ...newAccountData
-          };
-        }
+          displayName: user.displayName || email,
+          avatar: user.photoURL,
+          role: 'user',
+          status: 'blocked',
+          reason: 'Email chưa được đăng ký trong hệ thống'
+        });
+        await firebaseAuth.signOut();
+        setUnapprovedEmail(email);
+        setError(`Email "${email}" chưa được Quản trị viên cấp quyền trong hệ thống. Chỉ tài khoản đã được Admin thêm trước mới được phép đăng nhập!`);
+        return;
       }
 
       if (account) {
+        // 🔒 KIỂM TRA BẢO MẬT: Nếu tài khoản bị Admin khóa quyền đăng nhập
+        if (account.isBlocked) {
+          await recordLoginLog({
+            email,
+            username: account.username || email,
+            displayName: account.personName || account.userName || user.displayName || email,
+            avatar: account.avatar || user.photoURL,
+            role: account.role || 'user',
+            status: 'blocked',
+            reason: 'Tài khoản đã bị Quản trị viên tạm khóa quyền truy cập'
+          });
+          await firebaseAuth.signOut();
+          setError('🚫 Tài khoản này đã bị Quản trị viên tạm khóa quyền truy cập website. Vui lòng liên hệ Admin để được hỗ trợ mở khóa!');
+          return;
+        }
+
+        // Ghi nhật ký đăng nhập thành công vào hệ thống giám sát an ninh
+        await recordLoginLog({
+          email,
+          username: account.username || email,
+          displayName: account.personName || account.userName || user.displayName || email,
+          avatar: account.avatar || user.photoURL,
+          role: account.role || 'user',
+          status: 'success'
+        });
+
+        // Cập nhật mốc thời gian đăng nhập mới nhất
+        if (account.id) {
+          try {
+            await updateAccount(account.id, {
+              lastLoginAt: Timestamp.now()
+            });
+          } catch (e) {
+            console.warn('Could not update lastLoginAt:', e);
+          }
+        }
+
         // Đăng nhập thành công với quyền hạn của tài khoản (admin hoặc user)
         auth.login(
           account.username || email,

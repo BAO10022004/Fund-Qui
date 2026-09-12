@@ -18,6 +18,10 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   cursor: default;
   animation: cardIn 0.4s ease both;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .stat-card:nth-child(1) { animation-delay: 0.05s; }
@@ -75,6 +79,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 0.6rem;
+  white-space: nowrap;
 }
 
 /* ===== VALUE ===== */
@@ -85,6 +90,7 @@
   line-height: 1;
   margin-bottom: 0.5rem;
   transition: transform 0.2s;
+  white-space: nowrap;
 }
 
 .stat-card:hover .stat-value { transform: scale(1.02); }
@@ -98,6 +104,7 @@
   font-size: 0.72rem;
   color: rgba(255,255,255,0.28);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /* ===== SECTION TITLE ===== */

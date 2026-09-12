@@ -1,0 +1,1027 @@
+/* ============================================================
+   PaymentModal.css - Modern Nasani Light Payment Modal
+   ============================================================ */
+
+.payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: modalFadeIn 0.25s ease-out both;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.payment-modal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 860px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 
+    0 25px 50px -12px rgba(15, 23, 42, 0.25),
+    0 0 0 1px rgba(226, 232, 240, 0.8);
+  display: flex;
+  flex-direction: column;
+  animation: cardSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header */
+.payment-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.payment-header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.payment-header-icon {
+  font-size: 26px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.payment-modal-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+  letter-spacing: -0.3px;
+}
+
+.payment-modal-desc {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.payment-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+/* User Lock Banner */
+.payment-user-lock-banner {
+  margin: 16px 24px 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.payment-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.payment-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.payment-user-meta {
+  flex: 1;
+}
+
+.payment-lock-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #4f46e5;
+  background: #eef2ff;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.payment-user-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.payment-user-code {
+  color: #64748b;
+  font-weight: 500;
+  font-size: 13.5px;
+}
+
+.payment-user-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Grid Layout 2 Cột */
+.payment-modal-grid {
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 20px;
+}
+
+/* CỘT TRÁI */
+.payment-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.payment-section-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.payment-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.payment-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.payment-pending-tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #d97706;
+  background: #fef3c7;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.payment-debt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.payment-debt-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.payment-debt-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.payment-debt-item.active {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.debt-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.debt-item-desc {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.debt-item-date {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.debt-item-amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.payment-no-debt {
+  text-align: center;
+  padding: 16px 8px;
+}
+
+.no-debt-icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.no-debt-text strong {
+  color: #15803d;
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.no-debt-text p {
+  color: #64748b;
+  font-size: 12.5px;
+  margin: 0 0 10px 0;
+}
+
+.payment-custom-amount-box {
+  display: inline-flex;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+
+.payment-custom-input {
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  width: 130px;
+  outline: none;
+}
+
+.payment-custom-unit {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.payment-total-box {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.payment-total-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.payment-total-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #4f46e5;
+}
+
+/* Chi tiết chuyển khoản */
+.payment-details-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.detail-label {
+  color: #64748b;
+  font-weight: 500;
+  min-width: 95px;
+}
+
+.detail-value {
+  color: #1e293b;
+  font-weight: 600;
+  text-align: right;
+  word-break: break-all;
+}
+
+.detail-value.highlight {
+  color: #0284c7;
+  font-weight: 700;
+}
+
+.detail-value.bold {
+  font-weight: 800;
+  font-size: 14.5px;
+  letter-spacing: 0.5px;
+}
+
+.detail-value.note {
+  color: #d97706;
+  background: #fef3c7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.detail-copy-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-copy-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.payment-copy-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* CỘT PHẢI */
+.payment-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.payment-qr-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.payment-qr-tabs {
+  display: flex;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.payment-qr-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px 4px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.payment-qr-tab.active {
+  background: #ffffff;
+  color: #4f46e5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.payment-qr-frame {
+  width: 220px;
+  height: 220px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.payment-qr-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.payment-qr-caption {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.payment-qr-caption p {
+  margin: 4px 0 0 0;
+}
+
+.qr-badge-live {
+  display: inline-block;
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 11.5px;
+}
+
+.qr-badge-static {
+  display: inline-block;
+  color: #0284c7;
+  font-weight: 700;
+  font-size: 11.5px;
+}
+
+/* Khối Xác nhận thanh toán & Gửi duyệt tự động - ĐẶT Ở GIỮA VÀ TO HƠN */
+/* =======================================================
+   CINEMA EDITION - NÚT XÁC NHẬN & CHUYỂN PHÁT THƯ HOLLYWOOD
+======================================================= */
+.payment-action-confirm-box {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.payment-confirm-btn {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 18px;
+  padding: 16px 36px;
+  min-height: 64px;
+  width: 100%;
+  max-width: 530px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.4), 0 10px 30px rgba(15, 23, 42, 0.35);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.payment-confirm-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e293b 0%, #1d4ed8 50%, #3b82f6 100%);
+  transform: translateY(-2px) scale(1.008);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5), 0 14px 38px rgba(37, 99, 235, 0.45);
+}
+
+.payment-confirm-btn:disabled {
+  cursor: wait;
+}
+
+/* Hiệu ứng viền phát quang Cinema (Border Ambient Glow) */
+.cinema-border-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
+  opacity: 0.5;
+  pointer-events: none;
+  animation: borderSweep 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes borderSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Bầu trời sao vi mô trong nút (Cosmic Stardust) */
+.cinema-cosmic-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(1px 1px at 15% 25%, rgba(255, 255, 255, 0.6) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 45% 75%, rgba(186, 230, 253, 0.5) 50%, transparent 100%),
+    radial-gradient(1px 1px at 70% 30%, rgba(255, 255, 255, 0.7) 50%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 85% 65%, rgba(147, 197, 253, 0.5) 50%, transparent 100%);
+  opacity: 0.35;
+}
+
+/* Trạng thái đang bay (Deep Cinema Midnight Flight) */
+.payment-confirm-btn.is-flying {
+  background: linear-gradient(135deg, #020617 0%, #0c152e 50%, #172554 100%) !important;
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: inset 0 0 25px rgba(56, 189, 248, 0.25), 0 12px 40px rgba(2, 6, 23, 0.75) !important;
+}
+
+/* Trạng thái hoàn thành xuất sắc (Cinema Emerald Horizon) */
+.payment-confirm-btn.is-done {
+  background: linear-gradient(135deg, #022c22 0%, #047857 50%, #10b981 100%) !important;
+  border-color: rgba(110, 231, 183, 0.7) !important;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7), 0 12px 38px rgba(4, 120, 87, 0.55) !important;
+  transform: scale(1.01);
+}
+
+/* 1. Vệt gió siêu thanh đa tốc độ (Supersonic Speed Streaks) */
+.cinema-wind-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.wind-streak {
+  position: absolute;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 40%, rgba(56, 189, 248, 0.7) 70%, transparent 100%);
+  border-radius: 2px;
+}
+
+.streak-1 { top: 18%; width: 85px; animation: windSpeedFly 0.65s linear infinite; }
+.streak-2 { top: 42%; width: 120px; animation: windSpeedFly 0.5s linear infinite 0.15s; }
+.streak-3 { top: 68%; width: 95px; animation: windSpeedFly 0.75s linear infinite 0.3s; }
+.streak-4 { top: 86%; width: 75px; animation: windSpeedFly 0.6s linear infinite 0.45s; }
+
+@keyframes windSpeedFly {
+  0% { right: -130px; opacity: 0; }
+  30% { opacity: 0.95; }
+  100% { right: 115%; opacity: 0; }
+}
+
+/* 2. VÙNG KHÓI MỜ ẢO ĐA TẦNG ĐIỆN ẢNH (Volumetric Cinema Smoke Plume) */
+
+/* Lớp 2.1: Quầng khói khổng lồ bao trùm (Plume Aura) - RỘNG 56PX */
+.cinema-smoke-aura {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 56px;
+  background: linear-gradient(90deg,
+    rgba(2, 6, 23, 0) 0%,
+    rgba(30, 58, 138, 0.15) 15%,
+    rgba(56, 189, 248, 0.35) 55%,
+    rgba(186, 230, 253, 0.75) 88%,
+    rgba(255, 255, 255, 0.95) 100%
+  );
+  box-shadow: 
+    0 0 30px rgba(56, 189, 248, 0.8),
+    0 0 50px rgba(14, 165, 233, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.6);
+  transform: translateY(-50%);
+  border-radius: 30px;
+  filter: blur(7px);
+  pointer-events: none;
+  z-index: 2;
+  transition: width 0.06s linear;
+}
+
+/* Lớp 2.2: Mây cuộn phản lực (Turbulent Billows) */
+.cinema-smoke-clouds {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  height: 32px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(224, 242, 254, 0.25) 25%,
+    rgba(255, 255, 255, 0.7) 75%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  transform: translateY(-50%);
+  border-radius: 20px;
+  filter: blur(2.5px);
+  pointer-events: none;
+  z-index: 3;
+  transition: width 0.06s linear;
+}
+
+/* Lớp 2.3: Tinh vân lấp lánh trong khói (Stardust Sparks) */
+.cinema-smoke-sparks {
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  height: 22px;
+  background-image: 
+    radial-gradient(circle, #fef08a 1.2px, transparent 1.5px),
+    radial-gradient(circle, #38bdf8 1.5px, transparent 2px),
+    radial-gradient(circle, #ffffff 1px, transparent 1.5px);
+  background-size: 28px 18px, 36px 22px, 20px 14px;
+  background-position: 0 0, 10px 8px, 18px 4px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.85;
+  animation: sparksDrift 0.8s linear infinite;
+  transition: width 0.06s linear;
+}
+
+@keyframes sparksDrift {
+  0% { background-position: 0 0, 10px 8px, 18px 4px; }
+  100% { background-position: -40px 0, -30px 8px, -22px 4px; }
+}
+
+/* Lớp 2.4: Lõi tia sáng laser phản lực (Jet Plasma Core) */
+.cinema-jet-core {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(56, 189, 248, 0.6) 40%, 
+    #38bdf8 70%, 
+    #ffffff 100%
+  );
+  box-shadow: 0 0 10px #38bdf8, 0 0 20px #ffffff, 0 0 35px #0284c7;
+  transform: translateY(-50%);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 5;
+  transition: width 0.06s linear;
+}
+
+/* 3. CHIẾC MÁY BAY GIẤY 3D ORIGAMI PHONG CÁCH HOLLYWOOD */
+.cinema-plane-wrapper {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.06s linear; /* 60fps mượt như nhung */
+}
+
+/* 3.1. Chùm đèn pha quang học xé toang bóng đêm (Forward Photon Beam) */
+.cinema-nose-beam {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 95px;
+  height: 38px;
+  background: radial-gradient(ellipse at left center, 
+    rgba(224, 242, 254, 0.75) 0%, 
+    rgba(56, 189, 248, 0.35) 40%, 
+    rgba(56, 189, 248, 0.08) 70%, 
+    transparent 90%
+  );
+  filter: blur(4px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 3.2. Vệt sáng Anamorphic Flare kinh điển Hollywood */
+.cinema-anamorphic-flare {
+  position: absolute;
+  left: -55px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(56, 189, 248, 0.1) 15%, 
+    #38bdf8 45%, 
+    #ffffff 50%, 
+    #38bdf8 55%, 
+    rgba(56, 189, 248, 0.1) 85%, 
+    transparent 100%
+  );
+  box-shadow: 0 0 8px #38bdf8, 0 0 16px rgba(56, 189, 248, 0.7);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+/* 3.3. Lửa phản lực đuôi máy bay (Afterburner Core) */
+.cinema-afterburner-glow {
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 18px;
+  background: radial-gradient(ellipse at right center, 
+    #ffffff 0%, 
+    #38bdf8 35%, 
+    rgba(14, 165, 233, 0.6) 65%, 
+    transparent 85%
+  );
+  filter: blur(2px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* 3.4. Đĩa xung sóng phản lực Mach Ring */
+.cinema-mach-ring {
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 14px;
+  border-right: 2px solid #ffffff;
+  border-radius: 50%;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 4px #38bdf8);
+  animation: machRingPulse 0.25s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@keyframes machRingPulse {
+  0% { transform: translateY(-50%) scale(0.85); opacity: 0.6; }
+  100% { transform: translateY(-50%) scale(1.15); opacity: 1; }
+}
+
+/* 3.5. SVG Máy bay giấy 3D Origami: Khí động học vững chắc, HOÀN TOÀN KHÔNG LẮC LƯ */
+.cinema-origami-plane {
+  transform: rotate(-7deg); /* Góc bay khí động học chuẩn xác, kiên định không rung lắc */
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+  position: relative;
+  z-index: 4;
+}
+
+/* 4. SÓNG XUNG KÍCH KÉP KHI CÁN ĐÍCH (Dual Sonic Boom Shockwave) */
+.cinema-sonic-burst {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 92% 50%, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(110, 231, 183, 0.9) 30%, 
+    rgba(16, 185, 129, 0.35) 60%, 
+    transparent 85%
+  );
+  animation: sonicBurstFlash 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+  z-index: 7;
+}
+
+.cinema-sonic-ring {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(167, 243, 208, 0.9);
+  border-radius: 50%;
+  animation: sonicRingExpand 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+  z-index: 7;
+}
+
+@keyframes sonicBurstFlash {
+  0% { opacity: 1; transform: scale(0.8); }
+  100% { opacity: 0; transform: scale(1.4); }
+}
+
+@keyframes sonicRingExpand {
+  0% { opacity: 1; transform: translateY(-50%) scale(0.5); border-width: 4px; }
+  100% { opacity: 0; transform: translateY(-50%) scale(4); border-width: 1px; }
+}
+
+/* 5. NHÃN NÚT PHONG CÁCH CINEMA */
+.confirm-btn-inner-content {
+  position: relative;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-flight-text {
+  display: inline-flex;
+  align-items: center;
+  font-size: 16.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.btn-flight-text.idle-cinema {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cinema-btn-paper-icon {
+  color: #93c5fd;
+  filter: drop-shadow(0 0 8px rgba(147, 197, 253, 0.8));
+  transition: transform 0.25s ease;
+}
+
+.payment-confirm-btn:hover .cinema-btn-paper-icon {
+  transform: translate(3px, -2px);
+}
+
+.btn-flight-text.flying-cinema {
+  color: #e0f2fe;
+  letter-spacing: 0.4px;
+}
+
+.cinema-pulse-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: #38bdf8;
+  border-radius: 50%;
+  margin-right: 12px;
+  box-shadow: 0 0 12px #38bdf8, 0 0 20px #ffffff;
+  animation: dotBlink 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes dotBlink {
+  0% { opacity: 0.4; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.3); }
+}
+
+.btn-flight-text.success-cinema {
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  animation: textSuccessPop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes textSuccessPop {
+  0% { opacity: 0; transform: translateY(5px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.cinema-check-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: #ffffff;
+  color: #059669;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 900;
+  margin-right: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  animation: badgeSpring 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes badgeSpring {
+  0% { transform: scale(0) rotate(-45deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.confirm-toast-success {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 10px 20px;
+  border-radius: 12px;
+  text-align: center;
+  animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.12);
+  max-width: 530px;
+  width: 100%;
+}
+
+/* Footer */
+.payment-modal-footer {
+  padding: 14px 24px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.payment-support-text {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.payment-support-text strong {
+  color: #0284c7;
+}
+
+.payment-btn-done {
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.payment-btn-done:hover {
+  background: #4338ca;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .payment-modal-grid {
+    grid-template-columns: 1fr;
+  }
+  .payment-modal-card {
+    max-height: 95vh;
+  }
+  .payment-qr-frame {
+    width: 200px;
+    height: 200px;
+  }
+  .payment-modal-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .payment-btn-done {
+    width: 100%;
+  }
+}

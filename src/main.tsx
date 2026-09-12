@@ -12,6 +12,8 @@ import ManageAction from './Pages/ManageAction';
 import DiaryPage from './Pages/ManageDiary';
 import ManageHistory from './Pages/ManageHistory';
 import Login from './Pages/Login';
+import PaymentSettings from './Pages/PaymentSettings';
+import ManageLogins from './Pages/ManageLogins';
 import AppLayout from './Compunents/AppLayout';
 import { auth } from './Auth';
 export { auth } from './Auth';
@@ -225,6 +227,24 @@ ReactDOM.createRoot(rootElement).render(
             element={
               <AdminRoute>
                 <ManageAction />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="admin/payment-settings"
+            element={
+              <AdminRoute>
+                <PaymentSettings />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="admin/logins"
+            element={
+              <AdminRoute>
+                <ManageLogins />
               </AdminRoute>
             }
           />

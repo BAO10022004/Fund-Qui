@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
 
     // 4. Các khoản chờ thu / chưa hoàn thành trong tháng
     const monthPending = monthlyTransactions
-      .filter(t => t.status === 'pending')
+      .filter(t => t.status !== 'completed')
       .reduce((sum, t) => sum + (t.amount || 0), 0);
 
     return {
@@ -187,7 +187,7 @@ const Dashboard: React.FC = () => {
   const transactionStatusBreakdown = useMemo(() => {
     const totalCount = monthlyTransactions.length || 1;
     const completedCount = monthlyTransactions.filter(t => t.status === 'completed').length;
-    const pendingCount = monthlyTransactions.filter(t => t.status === 'pending').length;
+    const pendingCount = monthlyTransactions.filter(t => t.status !== 'completed').length;
 
     const completedPercent = Math.round((completedCount / totalCount) * 100) || (monthlyTransactions.length === 0 ? 100 : 0);
     const pendingPercent = monthlyTransactions.length > 0 ? Math.round((pendingCount / totalCount) * 100) : 0;

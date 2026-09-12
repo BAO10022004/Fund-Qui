@@ -163,50 +163,14 @@ export const getAccountByCodePerson = async (codePerson: string): Promise<Accoun
 export const findAccountByGoogleEmail = async (email: string): Promise<Account | null> => {
   try {
     const cleanEmail = email.trim().toLowerCase();
-    const prefix = cleanEmail.split('@')[0];
 
-    // Thử tìm theo exact email
-    let q = query(
-      collection(db, ACCOUNTS_COLLECTION),
-      where('username', '==', cleanEmail)
-    );
-    let snapshot = await getDocs(q);
-
-    // Nếu không thấy, thử tìm case-sensitive ban đầu
-    if (snapshot.empty) {
-      q = query(
-        collection(db, ACCOUNTS_COLLECTION),
-        where('username', '==', email.trim())
-      );
-      snapshot = await getDocs(q);
-    }
-
-    // Nếu không thấy, thử tìm bằng prefix username (trước @)
-    if (snapshot.empty && prefix) {
-      q = query(
-        collection(db, ACCOUNTS_COLLECTION),
-        where('username', '==', prefix)
-      );
-      snapshot = await getDocs(q);
-    }
-
-    if (!snapshot.empty) {
-      const docSnap = snapshot.docs[0];
-      return {
-        id: docSnap.id,
-        ...docSnap.data()
-      } as Account;
-    }
-
-    // Nếu vẫn không thấy, kiểm tra tất cả accounts xem có trùng username/userName không
+    // Lấy toàn bộ tài khoản và so khớp CHÍNH XÁC địa chỉ email
     const all = await getAllAccounts();
-    const found = all.find(
-      a =>
-        (a.username && a.username.toLowerCase() === cleanEmail) ||
-        (a.username && a.username.toLowerCase() === prefix) ||
-        (a.userName && a.userName.toLowerCase() === cleanEmail) ||
-        (a.userName && a.userName.toLowerCase() === prefix)
-    );
+    const found = all.find(a => {
+      const accUsername = (a.username || '').trim().toLowerCase();
+      const accEmail = ((a as any).email || '').trim().toLowerCase();
+      return accUsername === cleanEmail || accEmail === cleanEmail;
+    });
 
     return found || null;
   } catch (error) {

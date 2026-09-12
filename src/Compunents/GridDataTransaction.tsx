@@ -90,9 +90,13 @@ function GridDataTransaction({
 
                   {/* Column 3: Status */}
                   <td>
-                    <span className={`status-pill ${isCompleted ? 'active' : 'pending'}`}>
-                      {isCompleted ? 'Active' : 'Pending'}
-                    </span>
+                    {transaction.status === 'completed' ? (
+                      <span className="status-pill completed">Hoàn thành</span>
+                    ) : transaction.status === 'waiting' ? (
+                      <span className="status-pill waiting">Chờ xác nhận</span>
+                    ) : (
+                      <span className="status-pill pending">Chưa hoàn thành</span>
+                    )}
                   </td>
 
                   {/* Column 4: Date */}
