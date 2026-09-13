@@ -15,12 +15,20 @@ const ActionManagement: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingAction, setEditingAction] = useState<Action | null>(null);
   const [deletingAction, setDeletingAction] = useState<Action | null>(null);
-  const [formData, setFormData] = useState({ name: '' });
+  const [formData, setFormData] = useState({ name: '', amount: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const itemsPerPage = 5;
+
+  // Helper định dạng số với dấu chấm ngăn cách
+  const formatNumberWithDots = (val: string | number): string => {
+    if (val === undefined || val === null || val === '') return '';
+    const cleanNum = val.toString().replace(/\D/g, '');
+    if (!cleanNum) return '';
+    return cleanNum.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
 
   // Load actions on mount
   useEffect(() => {
@@ -44,14 +52,17 @@ const ActionManagement: React.FC = () => {
 
   const openCreateModal = () => {
     setEditingAction(null);
-    setFormData({ name: '' });
+    setFormData({ name: '', amount: '' });
     setError('');
     setIsModalOpen(true);
   };
 
   const openEditModal = (action: Action) => {
     setEditingAction(action);
-    setFormData({ name: action.name });
+    setFormData({ 
+      name: action.name, 
+      amount: action.amount !== undefined ? formatNumberWithDots(action.amount) : '' 
+    });
     setError('');
     setIsModalOpen(true);
   };
@@ -82,20 +93,30 @@ const ActionManagement: React.FC = () => {
       return;
     }
 
+    // Xóa dấu chấm khi chuyển đổi sang số
+    const cleanAmountStr = formData.amount.toString().replace(/\./g, '').trim();
+    const parsedAmount = cleanAmountStr ? parseFloat(cleanAmountStr) : undefined;
+
     try {
       setLoading(true);
       
       if (editingAction) {
         // ✏️ Update existing action
         console.log('📝 Updating action:', editingAction.id);
-        await updateAction(editingAction.id!, { name: trimmedName });
-        showSuccess('Cập nhật action thành công!');
+        await updateAction(editingAction.id!, { 
+          name: trimmedName,
+          amount: parsedAmount !== undefined && !isNaN(parsedAmount) ? parsedAmount : 0 
+        });
+        showSuccess('Cập nhật loại phạt thành công!');
       } else {
         // ➕ Create new action
         console.log('➕ Creating new action:', trimmedName);
-        const newId = await createAction(trimmedName);
+        const newId = await createAction({
+          name: trimmedName,
+          amount: parsedAmount !== undefined && !isNaN(parsedAmount) ? parsedAmount : 0
+        });
         console.log('✅ Created with ID:', newId);
-        showSuccess('Tạo action mới thành công!');
+        showSuccess('Tạo loại phạt mới thành công!');
       }
       
       closeModal();
@@ -185,7 +206,8 @@ const ActionManagement: React.FC = () => {
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Tên Action</th>
+                <th>Tên Loại Phạt / Action</th>
+                <th>Mức Tiền Mặc Định</th>
                 <th>Thao Tác</th>
               </tr>
             </thead>
@@ -194,10 +216,15 @@ const ActionManagement: React.FC = () => {
                 currentItems.map((action, index) => (
                   <tr key={action.id}>
                     <td>
-                      <strong>{indexOfFirstItem + index + 1}</strong>
+                      <strong style={{ color: '#0f172a', fontWeight: 700 }}>{indexOfFirstItem + index + 1}</strong>
                     </td>
                     <td>
-                      <strong>{action.name}</strong>
+                      <strong style={{ color: '#0f172a', fontWeight: 600 }}>{action.name}</strong>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: 600, color: action.amount ? '#059669' : '#64748b' }}>
+                        {action.amount ? new Intl.NumberFormat('vi-VN').format(action.amount) + ' ₫' : 'Chưa đặt'}
+                      </span>
                     </td>
                     <td>
                       <div className="action-buttons">
@@ -260,8 +287,8 @@ const ActionManagement: React.FC = () => {
 
         {/* Create/Edit Modal */}
         {isModalOpen && (
-          <div className="modal active">
-            <div className="modal-content">
+          <div className="action-modal-overlay" onClick={closeModal}>
+            <div className="action-modal-card" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h2>{editingAction ? 'Chỉnh Sửa Action' : 'Tạo Action Mới'}</h2>
                 <button className="btn-close" onClick={closeModal} disabled={loading}>
@@ -272,18 +299,38 @@ const ActionManagement: React.FC = () => {
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
                   <label htmlFor="actionName">
-                    Tên Action <span style={{ color: 'red' }}>*</span>
+                    Tên Loại Phạt / Action <span style={{ color: 'red' }}>*</span>
                   </label>
                   <input
                     type="text"
                     id="actionName"
-                    placeholder="Nhập tên action..."
+                    placeholder="Ví dụ: Đi trễ, Không dọn phòng, Vắng họp..."
                     value={formData.name}
-                    onChange={(e) => setFormData({ name: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                     disabled={loading}
                     autoFocus
                   />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="actionAmount">
+                    Số Tiền Phạt Mặc Định (VNĐ)
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    id="actionAmount"
+                    placeholder="Ví dụ: 10.000, 20.000, 50.000..."
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      amount: formatNumberWithDots(e.target.value) 
+                    })}
+                    disabled={loading}
+                  />
+                  <small style={{ color: '#64748b', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                    💡 Khi thêm giao dịch mới chọn loại phạt này, hệ thống sẽ tự động điền số tiền tương ứng.
+                  </small>
                 </div>
                 {error && (
                   <div className="alert alert-error">
@@ -316,8 +363,8 @@ const ActionManagement: React.FC = () => {
 
         {/* Delete Modal */}
         {isDeleteModalOpen && deletingAction && (
-          <div className="modal active">
-            <div className="modal-content delete-modal-content">
+          <div className="action-modal-overlay" onClick={closeDeleteModal}>
+            <div className="action-modal-card delete-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="icon">
                 <span style={{ fontSize: '40px' }}>🗑️</span>
               </div>

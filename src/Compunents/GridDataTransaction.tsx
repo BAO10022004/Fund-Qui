@@ -8,6 +8,22 @@ const getInitials = (name: string): string => {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 };
 
+const getAvatarBg = (name: string): string => {
+  const colors = [
+    'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    'linear-gradient(135deg, #3b82f6, #06b6d4)',
+    'linear-gradient(135deg, #10b981, #059669)',
+    'linear-gradient(135deg, #f59e0b, #d97706)',
+    'linear-gradient(135deg, #ec4899, #f43f5e)',
+    'linear-gradient(135deg, #8b5cf6, #d946ef)'
+  ];
+  let sum = 0;
+  for (let i = 0; i < (name || '').length; i++) {
+    sum += name.charCodeAt(i);
+  }
+  return colors[sum % colors.length];
+};
+
 function GridDataTransaction({ 
   openModal, 
   filteredTransactions, 
@@ -28,7 +44,7 @@ function GridDataTransaction({
   }, [filteredTransactions.length]);
 
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    return new Intl.NumberFormat('vi-VN').format(amount) + '\u00A0đ';
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -41,41 +57,49 @@ function GridDataTransaction({
       <table className="mock-table">
         <thead>
           <tr>
-            <th>User</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Amount</th>
-            <th style={{ textAlign: 'center' }}>Actions</th>
+            <th>Thành viên / Mô tả</th>
+            <th>Phân loại</th>
+            <th>Trạng thái</th>
+            <th>Thời gian</th>
+            <th>Số tiền</th>
+            <th style={{ textAlign: 'center' }}>Thao tác</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.length === 0 ? (
             <tr>
-              <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: '#71717a' }}>
-                Không có giao dịch nào
+              <td colSpan={6} style={{ textAlign: 'center', padding: '3.5rem', color: '#64748b' }}>
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>📭</div>
+                <div>Không tìm thấy giao dịch nào phù hợp với bộ lọc</div>
               </td>
             </tr>
           ) : (
             currentItems.map(transaction => {
               const initials = getInitials(transaction.personName);
-              const isCompleted = transaction.status === 'completed';
               const isThu = transaction.type === 'thu';
               
               // Formatting transaction date nicely
-              const formattedDate = new Date(transaction.date).toLocaleDateString('vi-VN');
-              const dateDisplay = `${transaction.dayOfWeek || ''}, ${formattedDate}`;
+              let dateDisplay = '';
+              try {
+                const dateObj = new Date(transaction.date);
+                const formattedDate = dateObj.toLocaleDateString('vi-VN');
+                dateDisplay = `${transaction.dayOfWeek ? transaction.dayOfWeek + ', ' : ''}${formattedDate}`;
+              } catch {
+                dateDisplay = transaction.date;
+              }
 
               return (
                 <tr key={transaction.id}>
-                  {/* Column 1: User */}
+                  {/* Column 1: User & Description */}
                   <td>
                     <div className="user-cell">
-                      <div className="user-avatar">{initials}</div>
+                      <div className="user-avatar" style={{ background: getAvatarBg(transaction.personName) }}>
+                        {initials}
+                      </div>
                       <div className="user-info">
-                        <span className="user-name">{transaction.personName || 'Không rõ'}</span>
+                        <span className="user-name">{transaction.personName || 'Chưa gán'}</span>
                         <span className="user-subtext" title={transaction.description}>
-                          {transaction.description || 'Không có mô tả'}
+                          {transaction.description || 'Không có mô tả chi tiết'}
                         </span>
                       </div>
                     </div>
@@ -83,19 +107,19 @@ function GridDataTransaction({
 
                   {/* Column 2: Type */}
                   <td>
-                    <span className="role-text">
-                      {isThu ? 'Khoản thu' : 'Khoản chi'}
+                    <span className={`trans-type-pill ${isThu ? 'thu' : 'chi'}`}>
+                      {isThu ? '💵 Thu' : '💸 Chi'}
                     </span>
                   </td>
 
                   {/* Column 3: Status */}
                   <td>
                     {transaction.status === 'completed' ? (
-                      <span className="status-pill completed">Hoàn thành</span>
+                      <span className="status-pill completed">✅ Hoàn thành</span>
                     ) : transaction.status === 'waiting' ? (
-                      <span className="status-pill waiting">Chờ xác nhận</span>
+                      <span className="status-pill waiting">🕒 Chờ duyệt</span>
                     ) : (
-                      <span className="status-pill pending">Chưa hoàn thành</span>
+                      <span className="status-pill pending">⏳ Chưa hoàn thành</span>
                     )}
                   </td>
 
@@ -109,8 +133,7 @@ function GridDataTransaction({
                   {/* Column 5: Amount */}
                   <td>
                     <span className={`amount-text-mock ${isThu ? 'positive' : 'negative'}`}>
-                      {isThu ? '+' : '-'}
-                      {formatCurrency(transaction.amount)}
+                      {isThu ? '+' : '-'}{formatCurrency(transaction.amount)}
                     </span>
                   </td>
 
@@ -120,7 +143,7 @@ function GridDataTransaction({
                       <button
                         className="action-btn-mock edit-btn"
                         onClick={() => openModal(transaction)}
-                        title="Sửa"
+                        title="Chỉnh sửa giao dịch"
                       >
                         <svg className="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -131,11 +154,13 @@ function GridDataTransaction({
                       <button
                         className="action-btn-mock delete-btn"
                         onClick={() => handleDelete(transaction.id!)}
-                        title="Xóa"
+                        title="Xóa giao dịch"
                       >
-                        <svg className="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
+                        <svg className="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          <line x1="10" y1="11" x2="10" y2="17" />
+                          <line x1="14" y1="11" x2="14" y2="17" />
                         </svg>
                       </button>
                     </div>

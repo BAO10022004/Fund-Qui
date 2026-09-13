@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/QuyPhong.css';
 import '../assets/header.css';
+import refreshGif from '../assets/refresh.gif';
+import refreshStatic from '../assets/refresh_static.gif';
+import moneyGif from '../assets/money.gif';
+import moneyStatic from '../assets/money_static.gif';
 import Fillter from '../Compunents/Fillter';
 import Loader from '../Compunents/Loading';
 import GripData from '../Compunents/GridData';
@@ -21,6 +25,8 @@ const QuyPhong: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(auth.getCurrentUser());
+  const [isRefreshHovered, setIsRefreshHovered] = useState(false);
+  const [isPaymentHovered, setIsPaymentHovered] = useState(false);
 
   const [personFilter, setPersonFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -129,19 +135,36 @@ const QuyPhong: React.FC = () => {
           </div>
           <div className="qp-header-actions">
             <button
-              className="qp-btn-payment"
+              className={`qp-btn-payment ${isPaymentHovered ? 'hovered' : ''}`}
               onClick={() => setShowPaymentModal(true)}
+              onMouseEnter={() => setIsPaymentHovered(true)}
+              onMouseLeave={() => setIsPaymentHovered(false)}
               title="Thanh toán nợ quỹ của bản thân qua mã QR ngân hàng"
             >
-              <span className="qp-btn-payment-icon">💳</span>
-              <span>Thanh toán quỹ / Quét mã QR</span>
+              <div className="qp-btn-payment-icon-wrapper">
+                <img
+                  src={isPaymentHovered ? `${moneyGif}?t=${Date.now()}` : moneyStatic}
+                  alt="Thanh toán"
+                  className="qp-btn-payment-icon-img"
+                />
+              </div>
+              <span className="qp-btn-payment-text">Thanh toán</span>
             </button>
             <button
-              className="qp-refresh-btn"
+              className={`qp-refresh-btn ${isRefreshHovered ? 'hovered' : ''}`}
               onClick={() => loadInitialData()}
+              onMouseEnter={() => setIsRefreshHovered(true)}
+              onMouseLeave={() => setIsRefreshHovered(false)}
               title="Tải lại dữ liệu mới nhất"
             >
-              🔄 Làm mới
+              <div className="qp-refresh-icon-wrapper">
+                <img
+                  src={isRefreshHovered ? `${refreshGif}?t=${Date.now()}` : refreshStatic}
+                  alt="Làm mới"
+                  className="qp-refresh-icon"
+                />
+              </div>
+              <span className="qp-refresh-text">Làm mới</span>
             </button>
           </div>
         </div>
@@ -226,6 +249,8 @@ const QuyPhong: React.FC = () => {
             filteredTransactions={filteredTransactions}
             formatCurrency={formatCurrency}
             searchQuery={searchQuery}
+            accounts={accounts}
+            persons={persons}
           />
         </div>
 

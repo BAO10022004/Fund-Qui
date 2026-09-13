@@ -12,6 +12,8 @@ interface FilterProps {
   setPersonFilter: (value: string) => void;
   statusFilter: string;
   setStatusFilter: (value: string) => void;
+  typeFilter?: string;
+  setTypeFilter?: (value: string) => void;
   persons: Person[];
   accounts?: Account[];
   startDate?: string;
@@ -217,6 +219,8 @@ function Filter({
   setPersonFilter,
   statusFilter,
   setStatusFilter,
+  typeFilter = 'all',
+  setTypeFilter,
   persons,
   accounts = [],
   startDate,
@@ -261,7 +265,7 @@ function Filter({
 
       {/* Filters row in glass wrapper */}
       <div className="filters-row-wrapper">
-        <div className="filters-row">
+        <div className={`filters-row ${setTypeFilter ? 'has-4-cols' : ''}`}>
           <div className="filter-group">
             <label>📅 Khoảng thời gian</label>
             <DateRangePicker
@@ -340,6 +344,17 @@ function Filter({
               <option value="pending">Chưa hoàn thành</option>
             </select>
           </div>
+
+          {setTypeFilter && (
+            <div className="filter-group">
+              <label>💳 Loại giao dịch</label>
+              <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+                <option value="all">Tất cả (Thu & Chi)</option>
+                <option value="thu">Khoản thu</option>
+                <option value="chi">Khoản chi</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
     </div>

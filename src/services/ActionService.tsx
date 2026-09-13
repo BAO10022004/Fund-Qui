@@ -19,22 +19,26 @@ const ACTIONS_COLLECTION = 'actions';
 /**
  * Tạo action mới
  */
-export const createAction = async (actionData: string): Promise<string> => {
+export const createAction = async (actionData: string | { name: string; amount?: number }): Promise<string> => {
   try {
+    const actionName = typeof actionData === 'string' ? actionData.trim() : actionData.name.trim();
+    const actionAmount = typeof actionData === 'string' ? undefined : actionData.amount;
+
     // Kiểm tra tên action đã tồn tại chưa
     const nameQuery = query(
       collection(db, ACTIONS_COLLECTION),
-      where('name', '==', actionData)
+      where('name', '==', actionName)
     );
     const nameSnapshot = await getDocs(nameQuery);
     
     if (!nameSnapshot.empty) {
-      throw new Error(`Action với tên "${actionData}" đã tồn tại!`);
+      throw new Error(`Loại phạt/hoạt động "${actionName}" đã tồn tại!`);
     }
 
     // Tạo action mới
     const newAction: Omit<Action, 'id'> = {
-      name: actionData,
+      name: actionName,
+      ...(actionAmount !== undefined && !isNaN(actionAmount) ? { amount: actionAmount } : {})
     };
 
     const docRef = await addDoc(collection(db, ACTIONS_COLLECTION), newAction);

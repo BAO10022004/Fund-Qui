@@ -12,9 +12,7 @@ const AdminLayout: React.FC = () => {
     { path: '/admin/transactions', icon: '💰', label: 'Giao dịch', description: 'Quản lý giao dịch' },
     { path: '/admin/persons', icon: '👥', label: 'Người dùng', description: 'Quản lý người' },
     { path: '/admin/action', icon: '⚡', label: 'Hoạt động', description: 'Quản lý hoạt động' },
-    { path: '/admin/diary', icon: '📝', label: 'Nhật ký', description: 'Quản lý nhật ký' },
     { path: '/accounts', icon: '🔑', label: 'Tài khoản', description: 'Quản lý tài khoản' },
-    { path: '/history', icon: '🕐', label: 'Lịch sử', description: 'Lịch sử thay đổi' },
   ];
 
   const isActive = (path: string) => location.pathname === path;

@@ -6,6 +6,8 @@ import { findAccountByGoogleEmail, updateAccount } from '../services/AccountServ
 import NotificationDropdown from './NotificationDropdown';
 import { subscribeNotifications, type PaymentNotification } from '../services/NotificationService';
 import { recordLoginLog } from '../services/LoginService';
+import logOutGif from '../assets/log-out.gif';
+import logOutStatic from '../assets/log_out_static.png';
 import '../assets/nasaniLayout.css';
 
 interface NavItem {
@@ -42,11 +44,10 @@ const MENU_GROUPS: MenuGroup[] = [
     ]
   },
   {
-    groupTitle: 'QUẢN LÝ HOẠT ĐỘNG & NHẬT KÝ',
+    groupTitle: 'QUẢN LÝ HOẠT ĐỘNG',
+    adminOnly: true,
     items: [
       { id: 'action', label: 'Hoạt động', path: '/admin/action', icon: '⚡', adminOnly: true },
-      { id: 'diary', label: 'Nhật ký chi tiêu', path: '/admin/diary', icon: '📝' },
-      { id: 'history', label: 'Lịch sử thay đổi', path: '/history', icon: '🕐', adminOnly: true },
     ]
   },
 
@@ -59,6 +60,7 @@ const AppLayout: React.FC = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [isLogoutHovered, setIsLogoutHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
@@ -217,10 +219,24 @@ const AppLayout: React.FC = () => {
           })}
         </div>
 
-        {/* Sidebar Footer */}
-        <div className="nasani-sidebar-footer" style={{ padding: '12px 20px', borderTop: '1px solid #e5e7eb', fontSize: '11px', color: '#64748b' }}>
-          <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', marginRight: '6px' }}></span>
-          <span>Hệ thống Quỹ trực tuyến</span>
+        {/* Sidebar Footer: Nút Đăng xuất Animation GIF */}
+        <div className="nasani-sidebar-footer">
+          <button
+            className={`nasani-btn-logout ${isLogoutHovered ? 'hovered' : ''} ${collapsed ? 'collapsed' : ''}`}
+            onClick={handleLogout}
+            onMouseEnter={() => setIsLogoutHovered(true)}
+            onMouseLeave={() => setIsLogoutHovered(false)}
+            title="Đăng xuất khỏi hệ thống"
+          >
+            <div className="nasani-logout-icon-wrapper">
+              <img
+                src={isLogoutHovered ? `${logOutGif}?t=${Date.now()}` : logOutStatic}
+                alt="Đăng xuất"
+                className="nasani-logout-icon"
+              />
+            </div>
+            {!collapsed && <span className="nasani-logout-text">Đăng xuất</span>}
+          </button>
         </div>
       </aside>
 

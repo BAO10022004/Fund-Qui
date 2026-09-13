@@ -9,8 +9,6 @@ import ManageTransactions from './Pages/ManageTransaction';
 import ManageAccounts from './Pages/ManageAccount';
 import EditAccount from './Pages/EditAccount';
 import ManageAction from './Pages/ManageAction';
-import DiaryPage from './Pages/ManageDiary';
-import ManageHistory from './Pages/ManageHistory';
 import Login from './Pages/Login';
 import PaymentSettings from './Pages/PaymentSettings';
 import ManageLogins from './Pages/ManageLogins';
@@ -18,6 +16,14 @@ import AppLayout from './Compunents/AppLayout';
 import { auth } from './Auth';
 export { auth } from './Auth';
 import './style.css';
+
+// Xóa bỏ thuộc tính dark mode cũ nếu có
+if (typeof document !== 'undefined') {
+  document.documentElement.removeAttribute('data-theme');
+  document.documentElement.classList.remove('dark');
+  document.body?.classList.remove('dark-theme');
+  localStorage.removeItem('nasani_theme');
+}
 
 // Override global window.alert with liquid glass alert
 const customAlert = (message: string) => {
@@ -200,8 +206,8 @@ ReactDOM.createRoot(rootElement).render(
           {/* Quỹ Phòng - Thành viên & Admin đều xem được */}
           <Route path="quy-phong" element={<QuyPhong />} />
 
-          {/* Nhật ký chi tiêu */}
-          <Route path="admin/diary" element={<DiaryPage />} />
+          {/* Bỏ Nhật ký chi tiêu: redirect về trang chủ */}
+          <Route path="admin/diary" element={<Navigate to="/" replace />} />
 
           {/* ===== Các chức năng CHỈ ADMIN mới được truy cập ===== */}
           <Route
@@ -272,14 +278,8 @@ ReactDOM.createRoot(rootElement).render(
             }
           />
 
-          <Route
-            path="history"
-            element={
-              <AdminRoute>
-                <ManageHistory />
-              </AdminRoute>
-            }
-          />
+          {/* Bỏ Lịch sử thay đổi: redirect về trang chủ */}
+          <Route path="history" element={<Navigate to="/" replace />} />
         </Route>
 
         {/* Catch all: Redirect về trang chủ */}

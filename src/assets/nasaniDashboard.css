@@ -408,3 +408,632 @@
   border-radius: 4px;
   transition: width 0.6s ease;
 }
+
+/* ==========================================================================
+   DÒNG THÔNG BÁO MỚI NHẤT (LATEST NOTIFICATION BAR)
+   ========================================================================== */
+
+.nasani-latest-notif-bar {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #3b82f6;
+  border-radius: 10px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.nasani-latest-notif-bar:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.nasani-latest-notif-bar.status-waiting {
+  background: #fffdf5;
+  border-color: #fef08a;
+  border-left: 4px solid #f59e0b;
+}
+
+.nasani-latest-notif-bar.status-approved {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  border-left: 4px solid #10b981;
+}
+
+.nasani-latest-notif-bar.status-rejected {
+  background: #fef2f2;
+  border-color: #fecaca;
+  border-left: 4px solid #ef4444;
+}
+
+.nasani-latest-notif-bar.status-empty {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  border-left: 4px solid #94a3b8;
+  cursor: default;
+}
+
+.notif-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-bar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.notif-bar-pulse-dot {
+  width: 7px;
+  height: 7px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: inline-block;
+  animation: notifPulseAnim 2s infinite;
+}
+
+@keyframes notifPulseAnim {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.notif-bar-divider {
+  width: 1px;
+  height: 18px;
+  background: #cbd5e1;
+  flex-shrink: 0;
+}
+
+.notif-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.notif-bar-message {
+  font-size: 13.5px;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-bar-amount {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.notif-bar-time {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.notif-badge-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.notif-badge-status.waiting {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.notif-badge-status.approved {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.notif-badge-status.rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.notif-bar-empty {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.notif-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.notif-bar-admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-notif-bar-approve {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-notif-bar-approve:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.btn-notif-bar-reject {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-notif-bar-reject:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+.btn-notif-bar-detail {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-notif-bar-detail:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* Modal chi tiết thông báo */
+.nasani-notif-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.nasani-notif-modal-card {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  animation: notifModalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes notifModalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.nasani-notif-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nasani-notif-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.nasani-notif-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.nasani-notif-modal-close:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.nasani-notif-modal-body {
+  padding: 20px;
+}
+
+.notif-detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notif-detail-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #f1f5f9;
+  font-size: 13.5px;
+}
+
+.notif-detail-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.notif-detail-label {
+  color: #64748b;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.notif-detail-val {
+  color: #1e293b;
+  text-align: right;
+  word-break: break-word;
+}
+
+.notif-detail-val.notif-detail-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.notif-detail-val.code {
+  font-family: monospace;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.nasani-notif-modal-footer {
+  padding: 14px 20px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.notif-modal-admin-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-notif-modal-close {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-notif-modal-close:hover {
+  background: #f1f5f9;
+}
+
+@media (max-width: 768px) {
+  .nasani-latest-notif-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .notif-bar-left {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .notif-bar-divider {
+    display: none;
+  }
+  .notif-bar-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* ===================================================
+   CUTE CHATBOT GREETING PEOPLE WITH COMPUTER (CRISP & HIGH CONTRAST)
+   =================================================== */
+.nasani-chatbot-card {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  position: relative !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+  padding: 18px 20px !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nasani-chatbot-card:hover {
+  border-color: #94a3b8 !important;
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.12), 0 4px 8px -2px rgba(15, 23, 42, 0.06) !important;
+}
+
+.nasani-chatbot-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 6px;
+}
+
+.nasani-chatbot-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nasani-chatbot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #c7d2fe;
+}
+
+.nasani-chatbot-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.nasani-bot-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid #a7f3d0;
+}
+
+.nasani-bot-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+  animation: botPulse 2s infinite ease-in-out;
+}
+
+@keyframes botPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.nasani-chatbot-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 16px;
+  width: 100%;
+}
+
+.nasani-chatbot-img-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+}
+
+/* Khung bệ đỡ làm nổi bật ảnh GIF, tạo độ tương phản cực sắc nét */
+.nasani-chatbot-showcase {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  background: radial-gradient(circle at center, #ffffff 40%, #f8fafc 100%);
+  border-radius: 16px;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nasani-chatbot-showcase:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.09);
+}
+
+/* Ảnh GIF kích thước pixel 1:1 chuẩn xác, không bị co giãn vỡ mờ */
+.nasani-chatbot-gif {
+  width: 129px !important;
+  height: 150px !important;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  filter: contrast(1.06) saturate(1.05);
+}
+
+/* Khung lời thoại (Speech bubble) sắc nét, rõ ràng */
+.nasani-chatbot-bubble {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #93c5fd;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);
+  text-align: left;
+}
+
+.nasani-chatbot-bubble::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 9px solid #93c5fd;
+}
+
+.nasani-chatbot-bubble::after {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+}
+
+.nasani-chatbot-bubble-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.nasani-chatbot-speech-text {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #0f172a;
+}
+
+/* Hỗ trợ Dark Mode rõ nét */
+body.dark-theme .nasani-chatbot-card,
+[data-theme="dark"] .nasani-chatbot-card {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-theme .nasani-chatbot-card-header,
+[data-theme="dark"] .nasani-chatbot-card-header {
+  border-bottom-color: #334155;
+}
+
+body.dark-theme .nasani-chatbot-name,
+[data-theme="dark"] .nasani-chatbot-name {
+  color: #f8fafc;
+}
+
+body.dark-theme .nasani-chatbot-showcase,
+[data-theme="dark"] .nasani-chatbot-showcase {
+  background: radial-gradient(circle at center, #334155 40%, #1e293b 100%);
+  border-color: #475569;
+}
+
+body.dark-theme .nasani-chatbot-bubble,
+[data-theme="dark"] .nasani-chatbot-bubble {
+  background: #0f172a;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .nasani-chatbot-bubble::before,
+[data-theme="dark"] .nasani-chatbot-bubble::before {
+  border-bottom-color: #3b82f6;
+}
+
+body.dark-theme .nasani-chatbot-bubble::after,
+[data-theme="dark"] .nasani-chatbot-bubble::after {
+  border-bottom-color: #0f172a;
+}
+
+body.dark-theme .nasani-chatbot-bubble-tag,
+[data-theme="dark"] .nasani-chatbot-bubble-tag {
+  color: #60a5fa;
+}
+
+body.dark-theme .nasani-chatbot-speech-text,
+[data-theme="dark"] .nasani-chatbot-speech-text {
+  color: #f1f5f9;
+}
+

@@ -12,5 +12,7 @@ export interface Transaction {
   personId: string;
   personName: string;
   status: TransactionStatus;
+  actionId?: string;       // ID loại phạt / hoạt động
+  actionName?: string;     // Tên loại phạt / hoạt động (ví dụ: Đi trễ, Không dọn dẹp)
   createdAt?: Timestamp;
 }

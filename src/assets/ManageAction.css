@@ -262,6 +262,7 @@ thead th:last-child {
 tbody tr {
   border-bottom: 1px solid #e0f7fa;
   transition: background 0.2s ease;
+  color: #1e293b !important;
 }
 
 tbody tr:hover {
@@ -270,6 +271,13 @@ tbody tr:hover {
 
 tbody td {
   padding: 18px;
+  color: #1e293b !important;
+  font-size: 15px;
+}
+
+tbody td strong {
+  color: #0f172a !important;
+  font-weight: 600;
 }
 
 tbody td:last-child {
@@ -374,23 +382,25 @@ tbody td:last-child {
   font-weight: bold;
 }
 
-/* Modal Styles */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
+/* Modal Styles (Isolated & Centered) */
+.action-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
   animation: fadeIn 0.2s ease;
-}
-
-.modal.active {
-  display: flex;
 }
 
 @keyframes fadeIn {
@@ -402,26 +412,28 @@ tbody td:last-child {
   }
 }
 
-.modal-content {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
+.action-modal-card {
+  background: #ffffff !important;
+  border-radius: 20px !important;
+  padding: 30px !important;
+  max-width: 520px !important;
+  width: 100% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35) !important;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  margin: auto !important;
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(24px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -481,16 +493,26 @@ tbody td:last-child {
   font-size: 15px;
   transition: all 0.3s ease;
   font-family: inherit;
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  font-weight: 500;
+}
+
+.form-group input::placeholder {
+  color: #94a3b8;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: #00bcd4;
-  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.15);
+  background-color: #ffffff !important;
+  color: #0f172a !important;
 }
 
 .form-group input:disabled {
-  background: #f5f5f5;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
   cursor: not-allowed;
 }
 

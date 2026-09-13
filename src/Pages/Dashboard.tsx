@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom';
 import { auth } from '../Auth';
 import { getAllTransactions } from '../services/TransactionsService';
 import type { Transaction } from '../models/Transaction';
+import {
+  subscribeNotifications,
+  type PaymentNotification,
+  approvePaymentRequest,
+  rejectPaymentRequest
+} from '../services/NotificationService';
 import '../assets/nasaniDashboard.css';
+import cuteChatbotGif from '../assets/cute_chatbot.gif';
 
 interface DailyFundData {
   day: number;
@@ -11,12 +18,6 @@ interface DailyFundData {
   income: number;
   expense: number;
   totalVolume: number;
-}
-
-interface TopContributor {
-  name: string;
-  amount: number;
-  rank: number;
 }
 
 const Dashboard: React.FC = () => {
@@ -27,8 +28,42 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [hoveredBar, setHoveredBar] = useState<DailyFundData | null>(null);
 
+  // Thông báo mới nhất
+  const [latestNotif, setLatestNotif] = useState<PaymentNotification | null>(null);
+  const [processingNotifId, setProcessingNotifId] = useState<string | null>(null);
+  const [showNotifModal, setShowNotifModal] = useState<boolean>(false);
+
   const [currentUser, setCurrentUser] = useState<any>(auth.getCurrentUser());
   const isAdmin = auth.isAdmin();
+
+  // Cute chatbot greeting state
+  const userName = currentUser?.name || currentUser?.displayName || 'bạn';
+  const hour = now.getHours();
+  const timeGreeting = hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
+
+  const [botMessage, setBotMessage] = useState<string>(
+    `Xin chào ${userName}! Chúc bạn một ngày làm việc thật vui vẻ và ngập tràn năng lượng! 💻✨`
+  );
+
+  const handleBotAction = (type: 'greet' | 'tip' | 'quote') => {
+    if (type === 'greet') {
+      setBotMessage(`Hê lố ${userName}! Rất vui được gặp bạn trên Quỹ Phòng! Cần gì cứ ấn các nút bên dưới nhé! 🎉`);
+    } else if (type === 'tip') {
+      const tips = [
+        '💡 Mẹo nhỏ: Bấm "Nộp Quỹ" ở góc trên để quét mã QR chuyển khoản siêu nhanh và tiện lợi!',
+        '💡 Số dư quỹ và biến động thu chi được tự động cập nhật ngay khi giao dịch hoàn tất.',
+        '💡 Theo dõi biểu đồ D1 - D30 ở bên cạnh để nắm bắt dòng tiền quỹ phòng theo từng ngày!'
+      ];
+      setBotMessage(tips[Math.floor(Math.random() * tips.length)]);
+    } else if (type === 'quote') {
+      const quotes = [
+        '✨ "Làm hết sức, quẩy hết mình! Quỹ rủng rỉnh, anh em đồng lòng!" 🥳🚀',
+        '✨ "Mỗi đóng góp của bạn là niềm vui chung cho mọi buổi liên hoan của team!" 🍕🍻',
+        '✨ "Hôm nay là một ngày tuyệt vời để hoàn thành xuất sắc mọi mục tiêu!" 🌟'
+      ];
+      setBotMessage(quotes[Math.floor(Math.random() * quotes.length)]);
+    }
+  };
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -36,6 +71,18 @@ const Dashboard: React.FC = () => {
     };
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
+  }, []);
+
+  // Lắng nghe thông báo thời gian thực từ Firestore để lấy thông báo mới nhất
+  useEffect(() => {
+    const unsubscribe = subscribeNotifications((notifs) => {
+      if (notifs && notifs.length > 0) {
+        setLatestNotif(notifs[0]);
+      } else {
+        setLatestNotif(null);
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   // Tải danh sách giao dịch từ Firestore
@@ -141,37 +188,6 @@ const Dashboard: React.FC = () => {
     return maxVal > 0 ? maxVal : 500000;
   }, [dailyChartData]);
 
-  // Top thành viên đóng góp nhiều nhất
-  const topContributors: TopContributor[] = useMemo(() => {
-    const map = new Map<string, number>();
-
-    // Tính tổng thu theo thành viên
-    transactions
-      .filter(t => t.type === 'thu' && t.status === 'completed')
-      .forEach(t => {
-        const name = t.personName || 'Thành viên';
-        const current = map.get(name) || 0;
-        map.set(name, current + (t.amount || 0));
-      });
-
-    const list: TopContributor[] = Array.from(map.entries())
-      .map(([name, amount], idx) => ({ name, amount, rank: idx + 1 }))
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 5);
-
-    // Dữ liệu mẫu nếu chưa có giao dịch
-    if (list.length === 0) {
-      return [
-        { name: 'Nguyễn Văn An', amount: 1500000, rank: 1 },
-        { name: 'Trần Thị Bình', amount: 1200000, rank: 2 },
-        { name: 'Lê Hoàng Long', amount: 950000, rank: 3 },
-        { name: 'Phạm Minh Đức', amount: 800000, rank: 4 },
-        { name: 'Vũ Quốc Bảo', amount: 650000, rank: 5 },
-      ];
-    }
-
-    return list.map((item, idx) => ({ ...item, rank: idx + 1 }));
-  }, [transactions]);
 
   // Phân loại nguồn mục đích quỹ
   const fundCategories = useMemo(() => {
@@ -200,6 +216,77 @@ const Dashboard: React.FC = () => {
 
   const handleFilterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+  };
+
+  // Định dạng thời gian thông báo
+  const formatNotifTime = (ts: any) => {
+    if (!ts) return '';
+    try {
+      const date = ts.toDate ? ts.toDate() : new Date(ts);
+      return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) +
+        ' ' + date.toLocaleDateString('vi-VN');
+    } catch {
+      return '';
+    }
+  };
+
+  const getRelativeTime = (ts: any) => {
+    if (!ts) return '';
+    try {
+      const date = ts.toDate ? ts.toDate() : new Date(ts);
+      const diffMs = Date.now() - date.getTime();
+      const diffMinutes = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMinutes / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      if (diffMinutes < 1) return 'Vừa xong';
+      if (diffMinutes < 60) return `${diffMinutes} phút trước`;
+      if (diffHours < 24) return `${diffHours} giờ trước`;
+      if (diffDays < 7) return `${diffDays} ngày trước`;
+      return date.toLocaleDateString('vi-VN');
+    } catch {
+      return '';
+    }
+  };
+
+  // Xử lý Admin Duyệt / Hủy thông báo ngay tại Bảng thống kê
+  const handleApproveNotif = async (e: React.MouseEvent, notif: PaymentNotification) => {
+    e.stopPropagation();
+    if (!notif.id || processingNotifId) return;
+    try {
+      setProcessingNotifId(notif.id);
+      const adminName = currentUser?.displayName || currentUser?.username || 'Admin';
+      await approvePaymentRequest(notif.id, notif.transactionIds || [], adminName);
+      alert(`✅ Đã DUYỆT thành công khoản đóng quỹ ${formatCurrency(notif.amount)} của ${notif.senderName}!`);
+      setShowNotifModal(false);
+    } catch (err: any) {
+      console.error('Lỗi khi duyệt:', err);
+      alert('❌ Lỗi khi duyệt: ' + (err.message || 'Lỗi hệ thống'));
+    } finally {
+      setProcessingNotifId(null);
+    }
+  };
+
+  const handleRejectNotif = async (e: React.MouseEvent, notif: PaymentNotification) => {
+    e.stopPropagation();
+    if (!notif.id || processingNotifId) return;
+    const confirmReject = window.confirm(
+      `Bạn có chắc chắn muốn HỦY yêu cầu thanh toán ${formatCurrency(notif.amount)} của ${notif.senderName} không? (Khoản tiền sẽ chuyển lại trạng thái Chưa hoàn thành)`
+    );
+    if (!confirmReject) return;
+
+    try {
+      setProcessingNotifId(notif.id);
+      const adminName = currentUser?.displayName || currentUser?.username || 'Admin';
+      await rejectPaymentRequest(notif.id, notif.transactionIds || [], adminName);
+      alert(`❌ Đã HỦY yêu cầu thanh toán của ${notif.senderName}!`);
+      setShowNotifModal(false);
+    } catch (err: any) {
+      console.error('Lỗi khi hủy:', err);
+      alert('❌ Lỗi khi hủy: ' + (err.message || 'Lỗi hệ thống'));
+    } finally {
+      setProcessingNotifId(null);
+    }
   };
 
   return (
@@ -255,6 +342,87 @@ const Dashboard: React.FC = () => {
           <span>Xem chi tiết sổ quỹ</span>
           <span>→</span>
         </Link>
+      </div>
+
+      {/* 1 Dòng thông báo mới nhất */}
+      <div
+        className={`nasani-latest-notif-bar ${latestNotif ? `status-${latestNotif.status}` : 'status-empty'
+          }`}
+        onClick={() => latestNotif && setShowNotifModal(true)}
+        title={latestNotif ? 'Nhấn để xem chi tiết thông báo' : undefined}
+      >
+        <div className="notif-bar-left">
+          <div className="notif-bar-badge">
+            <span className="notif-bar-pulse-dot"></span>
+            <span className="notif-bar-icon">🔔</span>
+            <span className="notif-bar-badge-text">Thông báo mới nhất</span>
+          </div>
+
+          <div className="notif-bar-divider"></div>
+
+          {latestNotif ? (
+            <div className="notif-bar-content">
+              {latestNotif.status === 'waiting' && (
+                <span className="notif-badge-status waiting">🕒 Chờ duyệt</span>
+              )}
+              {latestNotif.status === 'approved' && (
+                <span className="notif-badge-status approved">✅ Đã duyệt</span>
+              )}
+              {latestNotif.status === 'rejected' && (
+                <span className="notif-badge-status rejected">❌ Đã từ chối</span>
+              )}
+
+              <span className="notif-bar-message">
+                <strong>{latestNotif.senderName}</strong>
+                {latestNotif.senderCode ? ` (${latestNotif.senderCode})` : ''}:{' '}
+                {latestNotif.status === 'waiting' ? 'gửi yêu cầu đóng quỹ ' : 'khoản đóng quỹ '}
+                <span className="notif-bar-amount">+{formatCurrency(latestNotif.amount)}</span>
+                {latestNotif.description ? ` — "${latestNotif.description}"` : ''}
+              </span>
+
+              <span className="notif-bar-time" title={formatNotifTime(latestNotif.createdAt)}>
+                • {getRelativeTime(latestNotif.createdAt)}
+              </span>
+            </div>
+          ) : (
+            <div className="notif-bar-content notif-bar-empty">
+              <span>Hệ thống chưa có thông báo mới nào.</span>
+            </div>
+          )}
+        </div>
+
+        <div className="notif-bar-right" onClick={(e) => e.stopPropagation()}>
+          {latestNotif && latestNotif.status === 'waiting' && isAdmin && (
+            <div className="notif-bar-admin-actions">
+              <button
+                className="btn-notif-bar-approve"
+                onClick={(e) => handleApproveNotif(e, latestNotif)}
+                disabled={processingNotifId === latestNotif.id}
+                title="Duyệt nhanh yêu cầu"
+              >
+                {processingNotifId === latestNotif.id ? '⏳' : '✅ Duyệt'}
+              </button>
+              <button
+                className="btn-notif-bar-reject"
+                onClick={(e) => handleRejectNotif(e, latestNotif)}
+                disabled={processingNotifId === latestNotif.id}
+                title="Hủy/Từ chối yêu cầu"
+              >
+                ❌ Từ chối
+              </button>
+            </div>
+          )}
+
+          {latestNotif && (
+            <button
+              className="btn-notif-bar-detail"
+              onClick={() => setShowNotifModal(true)}
+              title="Xem chi tiết"
+            >
+              Chi tiết →
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Hàng chính: Thống kê tổng quan Quỹ (Trái) & Top đóng góp (Phải) */}
@@ -395,33 +563,40 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Card Phải: Top thành viên đóng góp nhiều nhất */}
-        <div className="nasani-card">
-          <div className="nasani-card-header">
-            <div>
-              <h2 className="nasani-card-title">Top đóng góp quỹ nhiều nhất</h2>
-              <span className="nasani-card-meta">
-                Tính đến ngày {new Date().toLocaleDateString('vi-VN')}
-              </span>
+        {/* Card Phải: Cute chatbot greeting people with computer */}
+        <div className="nasani-card nasani-chatbot-card">
+          <div className="nasani-chatbot-card-header">
+            <div className="nasani-chatbot-title-group">
+              <span className="nasani-chatbot-badge">🤖 Trợ lý ảo</span>
+              <span className="nasani-chatbot-name">Fund-Qui Bot</span>
             </div>
+            <span className="nasani-bot-status-tag">
+              <span className="nasani-bot-status-dot"></span> Online
+            </span>
           </div>
 
-          <div className="nasani-ip-list">
-            {topContributors.map((item) => (
-              <div key={item.rank} className="nasani-ip-item">
-                <div className="nasani-ip-left">
-                  <span className="nasani-ip-badge-pin" style={{ background: item.rank === 1 ? '#fef3c7' : '#fee2e2', borderColor: item.rank === 1 ? '#f59e0b' : '#fca5a5' }}>
-                    {item.rank === 1 ? '🥇 #1' : item.rank === 2 ? '🥈 #2' : item.rank === 3 ? '🥉 #3' : `🎖️ #${item.rank}`}
-                  </span>
-                  <span className="nasani-ip-addr" style={{ fontFamily: 'inherit', fontWeight: 600 }}>
-                    {item.name}
-                  </span>
-                </div>
-                <span className="nasani-ip-count" style={{ color: '#16a34a' }}>
-                  {formatCurrency(item.amount)}
-                </span>
+          <div className="nasani-chatbot-content">
+            <div className="nasani-chatbot-img-wrap">
+              <div className="nasani-chatbot-showcase">
+                <img
+                  src={cuteChatbotGif}
+                  alt="Cute chatbot greeting people with computer"
+                  className="nasani-chatbot-gif"
+                  width="129"
+                  height="150"
+                />
               </div>
-            ))}
+            </div>
+
+            {/* Khung lời chào tương tác / Speech bubble */}
+            <div className="nasani-chatbot-bubble">
+              <div className="nasani-chatbot-bubble-tag">
+                <span>💬 {timeGreeting}!</span>
+              </div>
+              <p className="nasani-chatbot-speech-text">
+                {botMessage}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -482,7 +657,113 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Modal chi tiết thông báo */}
+      {
+        showNotifModal && latestNotif && (
+          <div className="nasani-notif-modal-overlay" onClick={() => setShowNotifModal(false)}>
+            <div className="nasani-notif-modal-card" onClick={(e) => e.stopPropagation()}>
+              <div className="nasani-notif-modal-header">
+                <div className="nasani-notif-modal-title">
+                  <span>🔔 Chi tiết thông báo</span>
+                  {latestNotif.status === 'waiting' && (
+                    <span className="notif-badge-status waiting">🕒 Chờ duyệt</span>
+                  )}
+                  {latestNotif.status === 'approved' && (
+                    <span className="notif-badge-status approved">✅ Đã duyệt</span>
+                  )}
+                  {latestNotif.status === 'rejected' && (
+                    <span className="notif-badge-status rejected">❌ Đã từ chối</span>
+                  )}
+                </div>
+                <button
+                  className="nasani-notif-modal-close"
+                  onClick={() => setShowNotifModal(false)}
+                  title="Đóng"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="nasani-notif-modal-body">
+                <div className="notif-detail-grid">
+                  <div className="notif-detail-item">
+                    <span className="notif-detail-label">Người gửi:</span>
+                    <span className="notif-detail-val">
+                      <strong>{latestNotif.senderName}</strong>
+                      {latestNotif.senderCode && ` (${latestNotif.senderCode})`}
+                    </span>
+                  </div>
+
+                  <div className="notif-detail-item">
+                    <span className="notif-detail-label">Số tiền:</span>
+                    <span className="notif-detail-val notif-detail-amount">
+                      +{formatCurrency(latestNotif.amount)}
+                    </span>
+                  </div>
+
+                  <div className="notif-detail-item">
+                    <span className="notif-detail-label">Nội dung:</span>
+                    <span className="notif-detail-val">{latestNotif.description || 'Đóng quỹ phòng'}</span>
+                  </div>
+
+                  <div className="notif-detail-item">
+                    <span className="notif-detail-label">Thời gian tạo:</span>
+                    <span className="notif-detail-val">{formatNotifTime(latestNotif.createdAt)}</span>
+                  </div>
+
+                  {latestNotif.reviewedBy && (
+                    <div className="notif-detail-item">
+                      <span className="notif-detail-label">Người xử lý:</span>
+                      <span className="notif-detail-val">
+                        {latestNotif.reviewedBy}{' '}
+                        {latestNotif.reviewedAt && `(${formatNotifTime(latestNotif.reviewedAt)})`}
+                      </span>
+                    </div>
+                  )}
+
+                  {latestNotif.transactionIds && latestNotif.transactionIds.length > 0 && (
+                    <div className="notif-detail-item">
+                      <span className="notif-detail-label">Mã giao dịch:</span>
+                      <span className="notif-detail-val code">
+                        {latestNotif.transactionIds.join(', ')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="nasani-notif-modal-footer">
+                {latestNotif.status === 'waiting' && isAdmin && (
+                  <div className="notif-modal-admin-actions">
+                    <button
+                      className="btn-notif-bar-approve"
+                      onClick={(e) => handleApproveNotif(e, latestNotif)}
+                      disabled={processingNotifId === latestNotif.id}
+                    >
+                      {processingNotifId === latestNotif.id ? '⏳ Đang xử lý...' : '✅ Duyệt yêu cầu'}
+                    </button>
+                    <button
+                      className="btn-notif-bar-reject"
+                      onClick={(e) => handleRejectNotif(e, latestNotif)}
+                      disabled={processingNotifId === latestNotif.id}
+                    >
+                      ❌ Từ chối
+                    </button>
+                  </div>
+                )}
+                <button
+                  className="btn-notif-modal-close"
+                  onClick={() => setShowNotifModal(false)}
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </div >
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { firebaseAuth, googleProvider } from '../firebase';
@@ -8,6 +8,7 @@ import { recordLoginLog } from '../services/LoginService';
 import { Timestamp } from 'firebase/firestore';
 import { auth } from '../Auth';
 import type { Account } from '../models/Account';
+import { WeatherBackground } from '../Compunents/WeatherBackground';
 import '../assets/nasaniLogin.css';
 
 const Login: React.FC = () => {
@@ -17,6 +18,12 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [unapprovedEmail, setUnapprovedEmail] = useState<string | null>(null);
 
+  // Kéo thả (Drag & Drop) di chuyển form đăng nhập
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ startX: number; startY: number; initialX: number; initialY: number } | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
   const from = (location.state as any)?.from?.pathname || '/';
 
   // Nếu đã xác thực thì điều hướng vào hệ thống
@@ -25,6 +32,75 @@ const Login: React.FC = () => {
       navigate(from, { replace: true });
     }
   }, [navigate, from]);
+
+  // Bắt đầu kéo thả
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    // Không kích hoạt kéo thả nếu click vào nút bấm, input, svg, hoặc link
+    const target = e.target as HTMLElement;
+    if (target.closest('button, input, a, [role="button"], .nasani-google-btn-wrapper')) {
+      return;
+    }
+
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+
+    dragStartRef.current = {
+      startX: clientX,
+      startY: clientY,
+      initialX: position ? position.x : rect.left,
+      initialY: position ? position.y : rect.top
+    };
+
+    setIsDragging(true);
+  };
+
+  // Lắng nghe sự kiện di chuyển chuột/chạm tay trên toàn màn hình
+  useEffect(() => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDragging || !dragStartRef.current || !cardRef.current) return;
+
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+      const deltaX = clientX - dragStartRef.current.startX;
+      const deltaY = clientY - dragStartRef.current.startY;
+
+      let newX = dragStartRef.current.initialX + deltaX;
+      let newY = dragStartRef.current.initialY + deltaY;
+
+      // Giới hạn trong khung nhìn màn hình (Clamping)
+      const cardRect = cardRef.current.getBoundingClientRect();
+      const maxX = window.innerWidth - cardRect.width - 10;
+      const maxY = window.innerHeight - cardRect.height - 10;
+
+      newX = Math.max(10, Math.min(newX, maxX));
+      newY = Math.max(10, Math.min(newY, maxY));
+
+      setPosition({ x: newX, y: newY });
+    };
+
+    const handleEnd = () => {
+      setIsDragging(false);
+      dragStartRef.current = null;
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMove);
+      window.addEventListener('mouseup', handleEnd);
+      window.addEventListener('touchmove', handleMove);
+      window.addEventListener('touchend', handleEnd);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleEnd);
+    };
+  }, [isDragging]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -128,99 +204,116 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="nasani-login-page">
-      {/* Background layer phong cảnh SẮC NÉT KHÔNG MỜ */}
-      <div className="nasani-login-bg-layer"></div>
-      <div className="nasani-login-overlay"></div>
+    <WeatherBackground>
+      <div className="nasani-login-page">
+        {/* Ô đăng nhập cho phép kéo thả di chuyển linh hoạt */}
+        <div
+          ref={cardRef}
+          className={`nasani-login-card is-draggable ${isDragging ? 'is-dragging' : ''}`}
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          style={{
+            ...(position
+              ? {
+                position: 'fixed',
+                left: `${position.x}px`,
+                top: `${position.y}px`,
+                margin: 0,
+                transform: 'none',
+                zIndex: 50
+              }
+              : {})
+          }}
+        >
 
-      {/* Ô đăng nhập lệch qua phía bên phải một tí */}
-      <div className="nasani-login-card">
-        <div className="nasani-login-icon-wrap">
-          <span>🏛️</span>
-        </div>
 
-        <h1 className="nasani-login-title">Hệ Thống Quản Lý Quỹ</h1>
-        <p className="nasani-login-desc">
-          Vui lòng đăng nhập bằng <strong>tài khoản Google</strong> đã được Quản trị viên (Admin) phê duyệt để tiếp tục.
-        </p>
+          <div className="nasani-login-icon-wrap">
+            <span>🏛️</span>
+          </div>
 
-        {/* Thông báo từ chối truy cập nếu chưa duyệt */}
-        {error && (
-          <div className="nasani-alert-error" style={{ marginBottom: '18px' }}>
-            <span style={{ fontSize: '20px' }}>🚫</span>
-            <div>
-              <strong>Từ chối truy cập</strong>
-              <div>{error}</div>
+          <h1 className="nasani-login-title">Hệ Thống Quản Lý Quỹ</h1>
+          <p className="nasani-login-desc">
+            Vui lòng đăng nhập bằng <strong>tài khoản Google</strong> đã được Quản trị viên (Admin) phê duyệt để tiếp tục.
+          </p>
+
+          {/* Thông báo từ chối truy cập nếu chưa duyệt */}
+          {error && (
+            <div className="nasani-alert-error" style={{ marginBottom: '18px' }}>
+              <span style={{ fontSize: '20px' }}>🚫</span>
+              <div>
+                <strong>Từ chối truy cập</strong>
+                <div>{error}</div>
+              </div>
+            </div>
+          )}
+
+          {unapprovedEmail && (
+            <div className="nasani-alert-warning" style={{ marginBottom: '18px' }}>
+              🛡️ <strong>Lưu ý:</strong> Vui lòng liên hệ Admin để thêm email <strong>{unapprovedEmail}</strong> vào mục <em>Quản lý Tài khoản</em>.
+            </div>
+          )}
+
+          <div className="nasani-auth-box">
+            {/* Nút đăng nhập với 2 tia sáng & 2 khung lồng nhau */}
+            <div
+              className="nasani-google-btn-wrapper"
+              onClick={!loading ? handleGoogleLogin : undefined}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && !loading && handleGoogleLogin()}
+            >
+              {/* 2 tia sáng chạy quanh viền: chậm ở trạng thái thường, nhanh dần khi hover */}
+              <div className="btn-beams-spinner btn-beams-slow"></div>
+              <div className="btn-beams-spinner btn-beams-fast"></div>
+
+              <button
+                type="button"
+                className="nasani-google-btn"
+                disabled={loading}
+              >
+                {/* 2 khung lồng nhau xuất hiện khi hover */}
+                <div className="btn-frame-outer"></div>
+                <div className="btn-frame-inner"></div>
+
+                <div className="btn-content-inner">
+                  {loading ? (
+                    <span className="nasani-loading-dots">
+                      Đang xác thực Google<span></span><span></span><span></span>
+                    </span>
+                  ) : (
+                    <>
+                      <svg className="nasani-google-svg" viewBox="0 0 24 24">
+                        <path
+                          fill="#EA4335"
+                          d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.336 0 3.327 2.745 1.5 6.75l3.766 3.015z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M16.04 15.34c-1.073.71-2.437 1.17-4.04 1.17a6.994 6.994 0 0 1-6.734-4.91L1.5 14.614C3.327 18.62 7.336 21.36 12 21.36c2.945 0 5.618-.98 7.582-2.673l-3.542-3.346z"
+                        />
+                        <path
+                          fill="#4285F4"
+                          d="M22.545 10.227H12v3.818h6.073A5.205 5.205 0 0 1 15.82 17.51l3.541 3.345C21.436 18.964 24 15.055 24 10.227a13.3 13.3 0 0 0-.164-2H22.545z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.266 14.235A6.974 6.974 0 0 1 4.909 12c0-.79.136-1.545.357-2.235L1.5 6.75A11.964 11.964 0 0 0 0 12c0 1.92.455 3.736 1.255 5.364l4.011-3.129z"
+                        />
+                      </svg>
+                      <span>Đăng nhập với Google</span>
+                    </>
+                  )}
+                </div>
+              </button>
             </div>
           </div>
-        )}
 
-        {unapprovedEmail && (
-          <div className="nasani-alert-warning" style={{ marginBottom: '18px' }}>
-            🛡️ <strong>Lưu ý:</strong> Vui lòng liên hệ Admin để thêm email <strong>{unapprovedEmail}</strong> vào mục <em>Quản lý Tài khoản</em>.
+          <div className="nasani-login-footer">
+            <span>Design and Develop by Ôn Gia Bảo</span>
           </div>
-        )}
-
-        <div className="nasani-auth-box">
-          {/* Nút đăng nhập với 2 tia sáng & 2 khung lồng nhau */}
-          <div
-            className="nasani-google-btn-wrapper"
-            onClick={!loading ? handleGoogleLogin : undefined}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && !loading && handleGoogleLogin()}
-          >
-            {/* 2 tia sáng chạy quanh viền: chậm ở trạng thái thường, nhanh dần khi hover */}
-            <div className="btn-beams-spinner btn-beams-slow"></div>
-            <div className="btn-beams-spinner btn-beams-fast"></div>
-
-            <button
-              type="button"
-              className="nasani-google-btn"
-              disabled={loading}
-            >
-              {/* 2 khung lồng nhau xuất hiện khi hover */}
-              <div className="btn-frame-outer"></div>
-              <div className="btn-frame-inner"></div>
-
-              <div className="btn-content-inner">
-                {loading ? (
-                  <span className="nasani-loading-dots">
-                    Đang xác thực Google<span></span><span></span><span></span>
-                  </span>
-                ) : (
-                  <>
-                    <svg className="nasani-google-svg" viewBox="0 0 24 24">
-                      <path
-                        fill="#EA4335"
-                        d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.336 0 3.327 2.745 1.5 6.75l3.766 3.015z"
-                      />
-                      <path
-                        fill="#34A853"
-                        d="M16.04 15.34c-1.073.71-2.437 1.17-4.04 1.17a6.994 6.994 0 0 1-6.734-4.91L1.5 14.614C3.327 18.62 7.336 21.36 12 21.36c2.945 0 5.618-.98 7.582-2.673l-3.542-3.346z"
-                      />
-                      <path
-                        fill="#4285F4"
-                        d="M22.545 10.227H12v3.818h6.073A5.205 5.205 0 0 1 15.82 17.51l3.541 3.345C21.436 18.964 24 15.055 24 10.227a13.3 13.3 0 0 0-.164-2H22.545z"
-                      />
-                      <path
-                        fill="#FBBC05"
-                        d="M5.266 14.235A6.974 6.974 0 0 1 4.909 12c0-.79.136-1.545.357-2.235L1.5 6.75A11.964 11.964 0 0 0 0 12c0 1.92.455 3.736 1.255 5.364l4.011-3.129z"
-                      />
-                    </svg>
-                    <span>Đăng nhập với Google</span>
-                  </>
-                )}
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <div className="nasani-login-footer">
-          <span>Design and Develop by Ôn Gia Bảo</span>
         </div>
       </div>
-    </div>
+    </WeatherBackground>
   );
 };
 

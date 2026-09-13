@@ -5,14 +5,12 @@
 .payment-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #f8fafc;
   z-index: 9999;
-  padding: 16px;
-  animation: modalFadeIn 0.25s ease-out both;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.2s ease-out both;
 }
 
 @keyframes modalFadeIn {
@@ -21,168 +19,590 @@
 }
 
 .payment-modal-card {
-  background: #ffffff;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 860px;
-  max-height: 92vh;
+  background: #f8fafc;
+  border-radius: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
   overflow-y: auto;
-  box-shadow: 
-    0 25px 50px -12px rgba(15, 23, 42, 0.25),
-    0 0 0 1px rgba(226, 232, 240, 0.8);
+  box-shadow: none;
+  border: none;
   display: flex;
   flex-direction: column;
-  animation: cardSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  padding: 24px 36px 36px;
+  box-sizing: border-box;
 }
 
-@keyframes cardSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Header */
-.payment-modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #f1f5f9;
+/* ==================== PHÁC THẢO GIAO DIỆN (SKETCH LAYOUT) ==================== */
+/* Topbar: Tiêu đề "Thanh toán" & Nút đóng */
+.sketch-payment-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 24px;
+  max-width: 1400px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.payment-header-title-box {
+.sketch-topbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.payment-header-icon {
-  font-size: 26px;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #eef2ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.payment-modal-title {
-  font-size: 19px;
+.sketch-payment-title {
+  font-size: 32px;
   font-weight: 800;
   color: #0f172a;
-  margin: 0 0 2px 0;
-  letter-spacing: -0.3px;
-}
-
-.payment-modal-desc {
-  font-size: 13px;
-  color: #64748b;
   margin: 0;
+  letter-spacing: -0.5px;
 }
 
-.payment-close-btn {
-  width: 34px;
-  height: 34px;
+.sketch-btn-back {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sketch-btn-back:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.sketch-payment-close-btn {
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  background: #ffffff;
   color: #64748b;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.payment-close-btn:hover {
-  background: #f1f5f9;
+.sketch-payment-close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #fca5a5;
+  transform: scale(1.08);
+}
+
+/* Thân giao diện: 2 Cột cạnh nhau như hình phác thảo */
+.sketch-payment-body {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  flex: 1;
+  align-items: stretch;
+}
+
+/* CỘT TRÁI: icon animation */
+.sketch-card-left {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  position: relative;
+  min-height: 540px;
+  overflow: hidden;
+}
+
+.sketch-anim-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.sketch-anim-img {
+  width: 360px;
+  height: 360px;
+  max-width: 92%;
+  max-height: 500px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.sketch-anim-img:hover {
+  transform: scale(1.05);
+}
+
+/* CỘT PHẢI: Chọn khoản cần đóng */
+.sketch-card-right {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  min-height: 520px;
+}
+
+.sketch-right-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 16px;
+}
+
+.sketch-right-title {
+  font-size: 20px;
+  font-weight: 800;
   color: #0f172a;
-  border-color: #cbd5e1;
+  margin: 0;
+  letter-spacing: -0.3px;
 }
 
-/* User Lock Banner */
-.payment-user-lock-banner {
-  margin: 16px 24px 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+.sketch-right-counter {
+  font-size: 13.5px;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 5px 14px;
+  border-radius: 8px;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 14px 18px;
+}
+
+.sketch-right-counter strong {
+  color: #0284c7;
+  font-weight: 800;
+}
+
+/* Danh sách khoản nợ */
+.sketch-right-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 6px;
+  max-height: 350px;
+  min-height: 200px;
+}
+
+.sketch-item-row {
   display: flex;
   align-items: center;
   gap: 14px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.payment-user-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #e0e7ff;
+.sketch-item-row:hover {
+  border-color: #93c5fd;
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.sketch-item-row.selected {
+  border-color: #3b82f6;
+  background: #f0f7ff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+}
+
+.sketch-item-check-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  flex-shrink: 0;
-  border: 2px solid #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
-.payment-user-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.sketch-item-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: #2563eb;
+  cursor: pointer;
 }
 
-.payment-user-meta {
+.sketch-item-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.payment-lock-badge {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #4f46e5;
-  background: #eef2ff;
-  padding: 2px 8px;
-  border-radius: 6px;
-  margin-bottom: 4px;
-}
-
-.payment-user-name {
-  font-size: 16px;
+.sketch-item-name {
+  font-size: 14.5px;
   font-weight: 700;
   color: #0f172a;
   display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sketch-item-waiting-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.sketch-item-desc {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.sketch-item-date {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.sketch-item-amount {
+  font-size: 15px;
+  font-weight: 800;
+  color: #dc2626;
+  white-space: nowrap;
+}
+
+/* Trường hợp không có khoản nợ */
+.sketch-no-debt-box {
+  padding: 30px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sketch-no-debt-icon {
+  font-size: 40px;
+}
+
+.sketch-no-debt-box h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.sketch-no-debt-box p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.sketch-custom-amount-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sketch-custom-input {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  width: 160px;
+}
+
+.sketch-custom-unit {
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+/* Đường gạch ngang phân cách nét đứt (Dashed Divider) */
+.sketch-dashed-divider {
+  width: 100%;
+  border-top: 2px dashed #cbd5e1;
+  margin: 18px 0;
+}
+
+/* Hàng tổng số tiền */
+.sketch-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  padding: 0 4px;
+}
+
+.sketch-total-label {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.2px;
+}
+
+.sketch-total-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #2563eb;
+  letter-spacing: -0.3px;
+}
+
+/* Hàng 2 nút: Tạo mã & Liên hệ */
+.sketch-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sketch-btn-create-code {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.sketch-btn-create-code:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+.sketch-btn-contact {
+  background: #ffffff;
+  color: #334155;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.sketch-btn-contact:hover {
+  background: #f8fafc;
+  border-color: #0284c7;
+  color: #0284c7;
+  transform: translateY(-2px);
+}
+
+.sketch-btn-back-outline {
+  background: #ffffff;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.sketch-btn-back-outline:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+/* ==================== CỘT PHẢI: TRẠNG THÁI HIỂN THỊ MÃ QR ==================== */
+.sketch-card-right.qr-display-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 540px;
+}
+
+.sketch-card-right.qr-display-card .sketch-right-header {
+  width: 100%;
+}
+
+.sketch-btn-back-link {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #2563eb;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.payment-user-code {
-  color: #64748b;
-  font-weight: 500;
-  font-size: 13.5px;
+.sketch-btn-back-link:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+  transform: translateX(-2px);
 }
 
-.payment-user-sub {
-  font-size: 12px;
-  color: #64748b;
-  margin-top: 2px;
+.sketch-qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  flex: 1;
+  justify-content: center;
 }
 
-/* Grid Layout 2 Cột */
-.payment-modal-grid {
+.sketch-qr-box {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
   padding: 20px 24px;
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sketch-qr-img {
+  width: 260px;
+  height: 260px;
+  max-width: 90%;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #ffffff;
+  display: block;
+}
+
+.sketch-qr-badge-amount {
+  margin-top: 14px;
+  font-size: 14.5px;
+  color: #475569;
+  background: #f8fafc;
+  padding: 8px 22px;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.sketch-qr-badge-amount strong {
+  color: #2563eb;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.sketch-qr-bank-details {
+  width: 100%;
+  max-width: 440px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.sketch-bank-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  gap: 12px;
+}
+
+.sketch-bank-lbl {
+  color: #64748b;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.sketch-bank-val {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 13.5px;
+  text-align: right;
+  word-break: break-word;
+}
+
+.sketch-bank-val.highlight {
+  color: #0284c7;
+  font-weight: 800;
+}
+
+.sketch-bank-val.bold {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  color: #1e293b;
+}
+
+.sketch-bank-val.note {
+  color: #b45309;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+
+/* Responsive cho layout sketch */
+@media (max-width: 900px) {
+  .payment-modal-card {
+    padding: 16px 20px;
+  }
+  .sketch-payment-body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .sketch-card-left {
+    min-height: 320px;
+    padding: 24px;
+  }
+  .sketch-anim-img {
+    width: 220px;
+    height: 220px;
+  }
+  .sketch-card-right {
+    padding: 20px;
+    min-height: auto;
+  }
 }
 
 /* CỘT TRÁI */
@@ -988,35 +1408,48 @@
   color: #0284c7;
 }
 
+.payment-modal-footer {
+  padding: 20px 48px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .payment-btn-done {
   background: #4f46e5;
   color: #ffffff;
   border: none;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-size: 13.5px;
-  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
 }
 
 .payment-btn-done:hover {
   background: #4338ca;
+  transform: translateY(-1px);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .payment-modal-grid {
     grid-template-columns: 1fr;
-  }
-  .payment-modal-card {
-    max-height: 95vh;
+    padding: 20px 16px;
+    gap: 20px;
   }
   .payment-qr-frame {
     width: 200px;
     height: 200px;
   }
   .payment-modal-footer {
+    padding: 16px 20px;
     flex-direction: column;
     gap: 10px;
     align-items: stretch;

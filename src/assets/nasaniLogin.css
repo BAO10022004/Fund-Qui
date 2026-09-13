@@ -12,33 +12,462 @@
   position: relative;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: transparent;
+}
+
+/* ============================================================
+   LIVING LANDSCAPE & DYNAMIC WEATHER BACKGROUND
+   ============================================================ */
+.weather-bg-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
   background-color: #0f172a;
 }
 
-/* Background phong cảnh SẮC NÉT - BỎ HOÀN TOÀN LỚP MỜ */
-.nasani-login-bg-layer {
+.weather-art-canvas {
   position: absolute;
   inset: 0;
-  background-image: url('./login_bg.jpg');
   background-size: cover;
-  background-position: center;
-  /* Bỏ lớp mờ: không dùng blur */
-  filter: none !important;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transition: background-image 0.8s ease-in-out, opacity 0.8s ease-in-out;
   z-index: 0;
+  will-change: background-image;
 }
 
-/* Lớp phủ chuyển màu nhẹ nhàng bảo vệ tương phản, không làm mờ hình */
-.nasani-login-overlay {
+/* Ánh sáng tự nhiên theo thời gian */
+.weather-light-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: all 1s ease;
+}
+
+.weather-light-overlay.overlay-morning {
+  background: radial-gradient(circle at 15% 25%, rgba(254, 215, 170, 0.25) 0%, transparent 60%),
+              linear-gradient(180deg, rgba(254, 240, 138, 0.1) 0%, rgba(251, 146, 60, 0.1) 100%);
+}
+
+.weather-light-overlay.overlay-afternoon {
+  background: radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+              linear-gradient(180deg, rgba(56, 189, 248, 0.05) 0%, transparent 100%);
+}
+
+.weather-light-overlay.overlay-sunset {
+  background: radial-gradient(circle at 80% 60%, rgba(249, 115, 22, 0.3) 0%, transparent 65%),
+              linear-gradient(180deg, rgba(147, 51, 234, 0.15) 0%, rgba(239, 68, 68, 0.15) 100%);
+}
+
+.weather-light-overlay.overlay-night {
+  background: radial-gradient(circle at 65% 75%, rgba(147, 197, 253, 0.15) 0%, transparent 50%),
+              linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(2, 6, 23, 0.65) 100%);
+}
+
+/* Mưa rơi */
+.weather-rain-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.weather-raindrop {
+  position: absolute;
+  top: -60px;
+  width: 1.5px;
+  height: 45px;
+  background: linear-gradient(180deg, transparent, rgba(224, 242, 254, 0.8), rgba(186, 230, 253, 0.95));
+  transform: rotate(15deg);
+  animation: raindropFall linear infinite;
+}
+
+@keyframes raindropFall {
+  0% { transform: translateY(-50px) rotate(15deg); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 0.9; }
+  100% { transform: translateY(105vh) rotate(15deg); opacity: 0; }
+}
+
+/* Chớp giông bão */
+.weather-lightning-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  z-index: 3;
+  animation: lightningFlicker 6s infinite;
+  opacity: 0;
+}
+
+@keyframes lightningFlicker {
+  0%, 88%, 93%, 100% { opacity: 0; }
+  89% { opacity: 0.8; }
+  90% { opacity: 0.1; }
+  91% { opacity: 0.95; }
+  92% { opacity: 0.2; }
+}
+
+/* Tuyết rơi */
+.weather-snow-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.weather-snowflake {
+  position: absolute;
+  top: -20px;
+  background: #ffffff;
+  border-radius: 50%;
+  filter: blur(0.5px);
+  animation: snowflakeDrift ease-in-out infinite;
+}
+
+@keyframes snowflakeDrift {
+  0% { transform: translateY(-20px) translateX(0); }
+  50% { transform: translateY(50vh) translateX(25px); }
+  100% { transform: translateY(105vh) translateX(-20px); }
+}
+
+/* Mây trôi */
+.weather-clouds-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.weather-cloud {
+  position: absolute;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 75%);
+  filter: blur(25px);
+  border-radius: 50%;
+}
+
+.cloud-1 {
+  width: 700px;
+  height: 250px;
+  top: 10%;
+  left: -200px;
+  animation: cloudGlide 45s linear infinite alternate;
+}
+
+.cloud-2 {
+  width: 900px;
+  height: 300px;
+  top: 35%;
+  right: -300px;
+  animation: cloudGlideReverse 60s linear infinite alternate;
+}
+
+@keyframes cloudGlide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(35vw); }
+}
+
+@keyframes cloudGlideReverse {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-35vw); }
+}
+
+/* Sao đêm & Sao băng */
+.weather-stars-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.weather-twinkle-star {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+  animation: starTwinkle ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+  0% { opacity: 0.2; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1.3); }
+}
+
+.weather-shooting-star {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(56, 189, 248, 0.8), transparent);
+  border-radius: 2px;
+  transform: rotate(-35deg);
+  opacity: 0;
+}
+
+.shooting-star-1 {
+  top: 15%;
+  right: 25%;
+  width: 140px;
+  animation: shootingStarFly 8s cubic-bezier(0.16, 1, 0.3, 1) infinite 2s;
+}
+
+.shooting-star-2 {
+  top: 28%;
+  right: 45%;
+  width: 110px;
+  animation: shootingStarFly 12s cubic-bezier(0.16, 1, 0.3, 1) infinite 7s;
+}
+
+@keyframes shootingStarFly {
+  0% { transform: translate(0, 0) rotate(-35deg); opacity: 0; }
+  10% { opacity: 1; }
+  25% { transform: translate(-180px, 140px) rotate(-35deg); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Lớp phủ tương phản */
+.weather-vignette-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(15, 23, 42, 0.45) 0%,
-    rgba(15, 23, 42, 0.25) 45%,
+    rgba(15, 23, 42, 0.42) 0%,
+    rgba(15, 23, 42, 0.22) 40%,
     rgba(15, 23, 42, 0.05) 100%
   );
-  z-index: 1;
+  z-index: 3;
+  pointer-events: none;
 }
+
+/* Weather & Time Pill Widget */
+.weather-time-widget-wrapper {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.weather-time-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  padding: 8px 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.weather-time-pill:hover {
+  background: rgba(255, 255, 255, 0.94);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+}
+
+.pill-weather-icon {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pill-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pill-time-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill-time-text {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 0.3px;
+}
+
+.pill-divider {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.pill-time-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0284c7;
+}
+
+.pill-weather-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+}
+
+.pill-temp {
+  font-weight: 700;
+  color: #334155;
+}
+
+.pill-cond {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pill-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 15px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: transform 0.2s ease;
+}
+
+.weather-time-pill:hover .pill-toggle-btn {
+  transform: rotate(45deg);
+  color: #0f172a;
+}
+
+/* Bảng điều khiển chuyển cảnh nhanh */
+.weather-controls-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  padding: 16px;
+  box-sizing: border-box;
+  animation: dropdownPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  z-index: 30;
+}
+
+@keyframes dropdownPop {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 12px;
+}
+
+.dropdown-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dropdown-close-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.dropdown-close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.dropdown-section {
+  margin-bottom: 12px;
+}
+
+.dropdown-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.dropdown-auto-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #f1f5f9;
+}
+
+.dropdown-auto-toggle input {
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.dropdown-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.dropdown-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.dropdown-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.dropdown-btn.active {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.15);
+}
+
+.weather-content-wrapper {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  min-height: 100vh;
+}
+
 
 /* Khung đăng nhập kính trong suốt cao cấp - VUÔNG VỨC & THẤY ĐƯỢC BACKGROUND */
 .nasani-login-card {
@@ -54,9 +483,83 @@
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-  padding: 44px 38px 38px;
+  padding: 24px 36px 36px;
   text-align: left;
   animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Hiệu ứng kéo thả khung đăng nhập */
+.nasani-login-card.is-draggable {
+  touch-action: none;
+}
+
+.nasani-login-card.is-dragging {
+  cursor: grabbing !important;
+  user-select: none;
+  box-shadow: 
+    0 35px 65px -15px rgba(0, 0, 0, 0.5),
+    0 0 0 2px rgba(59, 130, 246, 0.6) !important;
+  transform: scale(1.012);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nasani-login-drag-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  margin: -24px -36px 20px -36px;
+  background: rgba(241, 245, 249, 0.7);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  cursor: grab;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.nasani-login-drag-bar:hover {
+  background: rgba(224, 242, 254, 0.85);
+}
+
+.nasani-login-card.is-dragging .nasani-login-drag-bar {
+  cursor: grabbing;
+  background: rgba(186, 230, 253, 0.95);
+}
+
+.drag-handle-grip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.drag-dots-icon {
+  font-size: 16px;
+  color: #0284c7;
+  line-height: 1;
+}
+
+.drag-reset-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.drag-reset-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: translateY(-1px);
 }
 
 @keyframes slideInLeft {

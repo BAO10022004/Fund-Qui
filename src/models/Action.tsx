@@ -1,5 +1,5 @@
 export interface Action {
   id?: string;
-  name: string;     // liên kết Person
-
+  name: string;     // Tên hoạt động / loại phạt / tội
+  amount?: number;  // Số tiền phạt / mức phí mặc định (VNĐ)
 }
