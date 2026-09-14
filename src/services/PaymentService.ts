@@ -37,10 +37,7 @@ export const DEFAULT_PAYMENT_CONFIG: PaymentConfig = {
   accountHolder: 'QUAN LY QUY NASANI',
   adminEmail: 'giabaoonutc2@gmail.com',
   notePrefix: 'DONG QUY',
-  useDynamicVietQR: true,
-  emailjsServiceId: '',
-  emailjsTemplateId: '',
-  emailjsPublicKey: ''
+  useDynamicVietQR: true
 };
 
 const PAYMENT_STORAGE_KEY = 'nasani_payment_config_cache';

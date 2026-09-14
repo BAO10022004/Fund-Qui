@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import addGif from '../assets/add.gif';
 import addStatic from '../assets/add_static_clean.png';
-import refreshGif from '../assets/refresh.gif';
-import refreshStatic from '../assets/refresh_static.gif';
 
 interface HeaderManageTransactionProps {
+
   openModal: () => void;
   loadData?: () => void;
 }
 
 function HeaderManageTransaction({ openModal, loadData }: HeaderManageTransactionProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isRefreshHovered, setIsRefreshHovered] = useState(false);
 
   return (
     <div className="qp-page-header">
@@ -37,21 +35,8 @@ function HeaderManageTransaction({ openModal, loadData }: HeaderManageTransactio
           <span className="qp-btn-add-text">Thêm giao dịch</span>
         </button>
         {loadData && (
-          <button
-            className={`qp-refresh-btn ${isRefreshHovered ? 'hovered' : ''}`}
-            onClick={() => loadData()}
-            onMouseEnter={() => setIsRefreshHovered(true)}
-            onMouseLeave={() => setIsRefreshHovered(false)}
-            title="Tải lại dữ liệu mới nhất"
-          >
-            <div className="qp-refresh-icon-wrapper">
-              <img
-                src={isRefreshHovered ? `${refreshGif}?t=${Date.now()}` : refreshStatic}
-                alt="Làm mới"
-                className="qp-refresh-icon"
-              />
-            </div>
-            <span className="qp-refresh-text">Làm mới</span>
+          <button className="qp-refresh-btn" onClick={() => loadData()} title="Tải lại dữ liệu mới nhất">
+            🔄 Làm mới
           </button>
         )}
       </div>

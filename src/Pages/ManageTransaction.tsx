@@ -13,8 +13,9 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getAllPersons } from '../services/PersonService';
-import { getAllAccounts } from '../services/AccountService';
+import { getAllAccounts, getAccountByCodePerson } from '../services/AccountService';
 import { getAllActions } from '../services/ActionService';
+import { sendTransactionEmailToMember } from '../services/EmailService';
 import type { Person } from '../models/Person';
 import type { Account } from '../models/Account';
 import type { Action } from '../models/Action';
@@ -38,6 +39,7 @@ const ManageTransactions: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
   const auth = new Auth();
 
   // Filters - đồng bộ hoàn toàn với Quỹ Phòng (+ loại giao dịch cho Admin)
@@ -67,6 +69,7 @@ const ManageTransactions: React.FC = () => {
   const loadData = async () => {
     try {
       setLoading(true);
+      setRefreshKey(prev => prev + 1);
       const [transactionsData, personsData, accountsData, actionsData] = await Promise.all([
         loadTransactions(),
         getAllPersons(),
@@ -174,7 +177,67 @@ const ManageTransactions: React.FC = () => {
       } else {
         logCreate(auth.getUsername()!, `Thêm giao dịch mới cho người: ${selectedPerson?.name || ''} với số tiền: ${formData.amount}`);
         await addDoc(collection(db, 'transactions'), transactionData);
-        alert('✅ Thêm giao dịch thành công!');
+
+        // Tự động tìm email tài khoản liên kết của thành viên và gửi email thông báo
+        let memberEmail = '';
+        if (selectedPerson) {
+          // 1. Tìm trong accounts đã load theo codePerson hoặc name
+          let matchedAcc = accounts.find(
+            a =>
+              (a.codePerson && selectedPerson.code && a.codePerson.trim().toLowerCase() === selectedPerson.code.trim().toLowerCase()) ||
+              (a.personName && a.personName.trim().toLowerCase() === selectedPerson.name.trim().toLowerCase())
+          );
+
+          // Nếu chưa thấy trong cache, thử truy vấn trực tiếp từ Firestore
+          if (!matchedAcc && selectedPerson.code) {
+            try {
+              matchedAcc = (await getAccountByCodePerson(selectedPerson.code)) || undefined;
+            } catch (accErr) {
+              console.warn('Lỗi khi lấy tài khoản theo codePerson:', accErr);
+            }
+          }
+
+          if (matchedAcc) {
+            if (matchedAcc.email && matchedAcc.email.includes('@')) {
+              memberEmail = matchedAcc.email.trim();
+            } else if (matchedAcc.username && matchedAcc.username.includes('@')) {
+              memberEmail = matchedAcc.username.trim();
+            }
+          }
+
+          // Kiểm tra thêm nếu person có trường email
+          if (!memberEmail && selectedPerson.email && selectedPerson.email.includes('@')) {
+            memberEmail = selectedPerson.email.trim();
+          }
+        }
+
+        if (memberEmail) {
+          try {
+            const emailRes = await sendTransactionEmailToMember({
+              memberEmail,
+              memberName: selectedPerson?.name || 'Thành viên',
+              memberCode: selectedPerson?.code,
+              amount: cleanAmount,
+              type: formData.type,
+              status: formData.status,
+              date: formData.date,
+              description: formData.description,
+              actionName: formData.actionName,
+              adminName: auth.getUsername() || 'Admin'
+            });
+
+            if (emailRes.success) {
+              alert(`✅ Thêm giao dịch thành công!\n📧 Đã gửi email thông báo tới thành viên (${memberEmail})`);
+            } else {
+              alert(`✅ Thêm giao dịch thành công!\n📬 ${emailRes.message}`);
+            }
+          } catch (emailErr) {
+            console.warn('Lỗi khi gửi email thông báo cho thành viên:', emailErr);
+            alert(`✅ Thêm giao dịch thành công!\n⚠️ Không thể gửi email thông báo tới ${memberEmail}`);
+          }
+        } else {
+          alert('✅ Thêm giao dịch thành công!');
+        }
       }
 
       await loadData();
@@ -256,7 +319,7 @@ const ManageTransactions: React.FC = () => {
         {/* Thẻ thống kê số liệu */}
         <div>
           <p className="qp-section-title">Tổng quan quỹ</p>
-          <StatisticsCards stats={stats} formatCurrency={formatCurrency} />
+          <StatisticsCards stats={stats} formatCurrency={formatCurrency} refreshKey={refreshKey} />
         </div>
 
         {/* Bộ lọc chuẩn Quỹ Phòng */}

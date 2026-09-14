@@ -11,6 +11,7 @@ import {
 } from '../services/NotificationService';
 import '../assets/nasaniDashboard.css';
 import cuteChatbotGif from '../assets/cute_chatbot.gif';
+import AnimatedCounter from '../Compunents/AnimatedCounter';
 
 interface DailyFundData {
   day: number;

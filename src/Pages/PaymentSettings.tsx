@@ -197,6 +197,43 @@ const PaymentSettings: React.FC = () => {
                   <span className="field-hint">
                     Hệ thống tự động gửi email thông báo chi tiết khi thành viên bấm xác nhận thanh toán
                   </span>
+
+                  {/* Nút gửi thử email kiểm tra tới Gmail Admin */}
+                  <div style={{ marginTop: '12px' }}>
+                    <button
+                      type="button"
+                      onClick={handleTestEmail}
+                      disabled={testingEmail}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #cbd5e1',
+                        color: '#1e293b',
+                        padding: '8px 14px',
+                        borderRadius: '8px',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      {testingEmail ? '⏳ Đang gửi thử email...' : `✉️ Gửi thử email kiểm tra tới: ${config.adminEmail || 'admin'}`}
+                    </button>
+                    {testResult && (
+                      <div style={{
+                        marginTop: '8px',
+                        fontSize: '12.5px',
+                        color: testResult.success ? '#15803d' : '#b91c1c',
+                        background: testResult.success ? '#dcfce7' : '#fee2e2',
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        fontWeight: 600
+                      }}>
+                        {testResult.success ? '✓ ' : '✕ '} {testResult.message}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Cú pháp chuyển khoản */}
@@ -212,124 +249,6 @@ const PaymentSettings: React.FC = () => {
                   <span className="field-hint">
                     Hệ thống sẽ tự động ghép thành: [Mã TV] [Tên TV] {config.notePrefix || 'DONG QUY'}
                   </span>
-                </div>
-              </div>
-
-              {/* KHỐI CẤU HÌNH EMAILJS */}
-              <div className="form-group-section">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                  <h3 className="section-title" style={{ margin: 0 }}>Cấu hình EmailJS (Gửi trực tiếp vào Gmail Admin)</h3>
-                  <a
-                    href="https://dashboard.emailjs.com/admin"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ fontSize: '12px', color: '#2563eb', textDecoration: 'none', fontWeight: 600 }}
-                  >
-                    🔗 Mở trang EmailJS.com ↗
-                  </a>
-                </div>
-
-                <div style={{
-                  background: '#f0fdf4',
-                  border: '1px solid #bbf7d0',
-                  padding: '12px 14px',
-                  borderRadius: '10px',
-                  fontSize: '12.5px',
-                  color: '#166534',
-                  marginTop: '12px',
-                  marginBottom: '14px',
-                  lineHeight: 1.55
-                }}>
-                  <strong>💡 4 Bước cấu hình EmailJS gửi mail tự động miễn phí:</strong>
-                  <ol style={{ margin: '6px 0 0 18px', padding: 0 }}>
-                    <li>Đăng ký tài khoản miễn phí tại <a href="https://www.emailjs.com" target="_blank" rel="noreferrer" style={{ color: '#15803d', fontWeight: 700, textDecoration: 'underline' }}>emailjs.com</a> (miễn phí 200 email/tháng).</li>
-                    <li>Vào mục <strong>Email Services</strong> ➔ <strong>Add New Service</strong> ➔ Chọn <strong>Gmail</strong> ➔ Kết nối Gmail nhận thư của bạn. Copy <strong>Service ID</strong> (VD: <code>service_xxx</code>).</li>
-                    <li>Vào mục <strong>Email Templates</strong> ➔ <strong>Create New Template</strong>:
-                      <div style={{ margin: '4px 0', fontSize: '11.5px', color: '#14532d' }}>
-                        - Trong tab <i>Settings</i>: <i>To Email</i> điền <code>{"{{to_email}}"}</code>.<br />
-                        - Trong tiêu đề Subject: <code>{"{{subject}}"}</code>.<br />
-                        - Trong nội dung Body: <code>{"{{message}}"}</code>.
-                      </div>
-                      Bấm Save và copy <strong>Template ID</strong> (VD: <code>template_xxx</code>).
-                    </li>
-                    <li>Vào mục <strong>Account</strong> (Góc trên bên phải) ➔ Copy <strong>Public Key</strong>.</li>
-                  </ol>
-                </div>
-
-                {/* Service ID */}
-                <div className="form-field">
-                  <label className="field-label">EmailJS Service ID</label>
-                  <input
-                    type="text"
-                    className="field-input highlight-code"
-                    value={config.emailjsServiceId || ''}
-                    onChange={e => setConfig({ ...config, emailjsServiceId: e.target.value })}
-                    placeholder="VD: service_8u2xxxx"
-                  />
-                  <span className="field-hint">Lấy từ menu Email Services trên EmailJS</span>
-                </div>
-
-                {/* Template ID */}
-                <div className="form-field">
-                  <label className="field-label">EmailJS Template ID</label>
-                  <input
-                    type="text"
-                    className="field-input highlight-code"
-                    value={config.emailjsTemplateId || ''}
-                    onChange={e => setConfig({ ...config, emailjsTemplateId: e.target.value })}
-                    placeholder="VD: template_5d6xxxx"
-                  />
-                  <span className="field-hint">Lấy từ menu Email Templates trên EmailJS</span>
-                </div>
-
-                {/* Public Key */}
-                <div className="form-field">
-                  <label className="field-label">EmailJS Public Key (User ID)</label>
-                  <input
-                    type="text"
-                    className="field-input highlight-code"
-                    value={config.emailjsPublicKey || ''}
-                    onChange={e => setConfig({ ...config, emailjsPublicKey: e.target.value })}
-                    placeholder="VD: a1b2c3d4e5f6xxxx"
-                  />
-                  <span className="field-hint">Lấy từ menu Account Settings trên EmailJS</span>
-                </div>
-
-                {/* Nút gửi thử email */}
-                <div style={{ marginTop: '12px' }}>
-                  <button
-                    type="button"
-                    onClick={handleTestEmail}
-                    disabled={testingEmail}
-                    style={{
-                      background: '#f8fafc',
-                      border: '1px solid #cbd5e1',
-                      color: '#1e293b',
-                      padding: '8px 14px',
-                      borderRadius: '8px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    {testingEmail ? '⏳ Đang gửi thử email...' : `✉️ Gửi thử email kiểm tra tới: ${config.adminEmail || 'admin'}`}
-                  </button>
-                  {testResult && (
-                    <div style={{
-                      marginTop: '8px',
-                      fontSize: '12.5px',
-                      color: testResult.success ? '#15803d' : '#b91c1c',
-                      background: testResult.success ? '#dcfce7' : '#fee2e2',
-                      padding: '6px 10px',
-                      borderRadius: '6px',
-                      fontWeight: 600
-                    }}>
-                      {testResult.success ? '✓ ' : '✕ '} {testResult.message}
-                    </div>
-                  )}
                 </div>
               </div>
 
