@@ -1,3 +1,4 @@
+import emailjs from '@emailjs/browser';
 // src/services/EmailService.ts
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -29,9 +30,19 @@ export interface MemberTransactionEmailPayload {
   adminName?: string;
 }
 
+
+function sanitizeFirestoreData<T extends Record<string, any>>(data: T): T {
+  const clean: any = {};
+  for (const key of Object.keys(data)) {
+    const val = data[key];
+    clean[key] = val === undefined ? null : val;
+  }
+  return clean as T;
+}
+
 export interface EmailSendResult {
   success: boolean;
-  method: 'smtp' | 'firestore_log' | 'error';
+  method: 'smtp' | 'emailjs' | 'firestore_log' | 'error';
   message: string;
 }
 
@@ -39,6 +50,14 @@ export interface EmailSendResult {
  * Gửi email qua backend/dev middleware SMTP sử dụng Gmail SMTP
  */
 async function sendViaSmtpApi(to: string, subject: string, text: string, html: string): Promise<boolean> {
+  const isLocal = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+  // Chỉ gọi dev middleware khi đang chạy trên localhost để tránh lỗi 405 trên GitHub Pages / Production
+  if (!isLocal) {
+    return false;
+  }
+
   const endpoints = ['/api/send-email', '/Fund-Qui/api/send-email'];
 
   for (const endpoint of endpoints) {
@@ -66,20 +85,47 @@ async function sendViaSmtpApi(to: string, subject: string, text: string, html: s
  * 3. Luôn lưu bản ghi theo dõi vào Firestore (mail_logs và mail)
  */
 export const sendPaymentEmailToAdmin = async (
-  payload: PaymentEmailPayload,
-  passedConfig?: PaymentConfig
+  arg1: PaymentEmailPayload | string,
+  arg2?: PaymentConfig | string,
+  arg3?: number,
+  arg4?: string,
+  arg5?: string,
+  arg6?: PaymentConfig
 ): Promise<EmailSendResult> => {
-  const config = passedConfig || (await getPaymentConfig());
-  const amountFormatted = new Intl.NumberFormat('vi-VN').format(payload.amount) + ' đ';
-  const targetEmail = payload.adminEmail || 'giabaoonutc2@gmail.com';
+  let payload: PaymentEmailPayload;
+  let passedConfig: PaymentConfig | undefined;
 
-  const emailSubject = `[Quỹ phòng Quí] Yêu cầu duyệt đóng quỹ từ ${payload.senderName} (${amountFormatted})`;
+  if (typeof arg1 === 'string') {
+    passedConfig = arg6 || (typeof arg2 !== 'string' ? (arg2 as PaymentConfig) : undefined);
+    const cfg = passedConfig || (await getPaymentConfig());
+    payload = {
+      adminEmail: arg1 || cfg.adminEmail || 'giabaoonutc2@gmail.com',
+      senderName: (typeof arg2 === 'string' ? arg2 : '') || 'Thành viên',
+      amount: typeof arg3 === 'number' ? arg3 : 0,
+      transferContent: arg4 || '',
+      bankName: cfg.bankName || '',
+      accountNumber: cfg.accountNumber || '',
+      transactionCount: 1,
+      timeString: new Date().toLocaleString('vi-VN')
+    };
+  } else {
+    payload = arg1;
+    passedConfig = arg2 as PaymentConfig;
+  }
+
+  const config = passedConfig || (await getPaymentConfig());
+  const amountClean = Number(payload.amount) || 0;
+  const amountFormatted = new Intl.NumberFormat('vi-VN').format(amountClean) + ' đ';
+  const targetEmail = (payload.adminEmail || config.adminEmail || 'giabaoonutc2@gmail.com').trim();
+  const senderNameClean = (payload.senderName && String(payload.senderName).trim()) ? String(payload.senderName).trim() : 'Thành viên';
+
+  const emailSubject = `[Quỹ phòng Quí] Yêu cầu duyệt đóng quỹ từ ${senderNameClean} (${amountFormatted})`;
   const emailBody = `
 Xin chào Quản trị viên,
 
 Hệ thống Quỹ phòng Nasani vừa ghi nhận yêu cầu xác nhận thanh toán quỹ từ thành viên:
 --------------------------------------------------
-- Thành viên: ${payload.senderName} ${payload.senderCode ? `(${payload.senderCode})` : ''}
+- Thành viên: ${senderNameClean} ${payload.senderCode ? `(${payload.senderCode})` : ''}
 - Số tiền: ${amountFormatted}
 - Ngân hàng thụ hưởng: ${payload.bankName}
 - Số tài khoản: ${payload.accountNumber}
@@ -101,12 +147,12 @@ Hệ thống Quản lý Quỹ Nasani
   </div>
   <div style="padding: 24px;">
     <p style="font-size: 14px; color: #334155; margin-top: 0;">Xin chào Quản trị viên,</p>
-    <p style="font-size: 14px; color: #334155;">Thành viên <strong>${payload.senderName}</strong> vừa xác nhận đã chuyển khoản đóng quỹ với thông tin chi tiết dưới đây:</p>
+    <p style="font-size: 14px; color: #334155;">Thành viên <strong>${senderNameClean}</strong> vừa xác nhận đã chuyển khoản đóng quỹ với thông tin chi tiết dưới đây:</p>
     
     <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 18px 0;">
       <tr style="border-bottom: 1px solid #f1f5f9;">
         <td style="padding: 10px 0; color: #64748b;">Thành viên:</td>
-        <td style="padding: 10px 0; font-weight: bold; color: #0f172a; text-align: right;">${payload.senderName} ${payload.senderCode ? `(${payload.senderCode})` : ''}</td>
+        <td style="padding: 10px 0; font-weight: bold; color: #0f172a; text-align: right;">${senderNameClean} ${payload.senderCode ? `(${payload.senderCode})` : ''}</td>
       </tr>
       <tr style="border-bottom: 1px solid #f1f5f9;">
         <td style="padding: 10px 0; color: #64748b;">Số tiền:</td>
@@ -145,15 +191,15 @@ Hệ thống Quản lý Quỹ Nasani
   const smtpSent = await sendViaSmtpApi(targetEmail, emailSubject, emailBody, emailHtml);
   if (smtpSent) {
     try {
-      await addDoc(collection(db, 'mail_logs'), {
+      await addDoc(collection(db, 'mail_logs'), sanitizeFirestoreData({
         to: targetEmail,
         subject: emailSubject,
         body: emailBody,
-        senderName: payload.senderName,
+        senderName: senderNameClean,
         amount: payload.amount,
         createdAt: Timestamp.now(),
         status: 'delivered_smtp'
-      });
+      }));
     } catch { }
 
     return {
@@ -163,23 +209,67 @@ Hệ thống Quản lý Quỹ Nasani
     };
   }
 
+
+  // 1b. Thử gửi qua EmailJS nếu có cấu hình trên Host / GitHub Pages
+  if (config.emailjsServiceId && config.emailjsTemplateId && config.emailjsPublicKey) {
+    try {
+      const emailJsSent = await emailjs.send(
+        config.emailjsServiceId,
+        config.emailjsTemplateId,
+        {
+          to_email: targetEmail,
+          admin_email: targetEmail,
+          sender_name: senderNameClean,
+          amount: amountFormatted,
+          transfer_content: payload.transferContent || '',
+          bank_name: payload.bankName || config.bankName || '',
+          account_number: payload.accountNumber || config.accountNumber || '',
+          time_string: payload.timeString || new Date().toLocaleString('vi-VN'),
+          subject: emailSubject,
+          message: emailBody
+        },
+        config.emailjsPublicKey
+      );
+      if (emailJsSent.status === 200) {
+        try {
+          await addDoc(collection(db, 'mail_logs'), sanitizeFirestoreData({
+            to: targetEmail,
+            subject: emailSubject,
+            body: emailBody,
+            senderName: senderNameClean,
+            amount: amountClean,
+            createdAt: Timestamp.now(),
+            status: 'delivered_emailjs'
+          }));
+        } catch {}
+        return {
+          success: true,
+          method: 'emailjs' as any,
+          message: `Đã gửi email thông báo tới ${targetEmail} qua EmailJS`
+        };
+      }
+    } catch (eJsErr) {
+      console.warn('Lỗi gửi qua EmailJS:', eJsErr);
+    }
+  }
+
   // 2. Lưu bản ghi vào Firestore mail_logs & mail nếu gửi SMTP chưa được
   try {
-    await addDoc(collection(db, 'mail_logs'), {
+    await addDoc(collection(db, 'mail_logs'), sanitizeFirestoreData({
       to: targetEmail,
       subject: emailSubject,
       body: emailBody,
-      senderName: payload.senderName,
+      senderName: senderNameClean,
       amount: payload.amount,
       createdAt: Timestamp.now(),
       status: 'pending'
-    });
+    }));
   } catch (logErr) {
     console.warn('Lỗi ghi log mail_logs:', logErr);
   }
 
   try {
-    await addDoc(collection(db, 'mail'), {
+    await addDoc(collection(db, 'mail'), sanitizeFirestoreData({
       to: [targetEmail],
       message: {
         subject: emailSubject,
@@ -187,7 +277,7 @@ Hệ thống Quản lý Quỹ Nasani
         html: emailHtml
       },
       createdAt: Timestamp.now()
-    });
+    }));
   } catch (mailErr) {
     console.warn('Lỗi ghi collection mail:', mailErr);
   }
@@ -332,7 +422,7 @@ Hệ thống Quản lý Quỹ phòng Nasani
   const smtpSent = await sendViaSmtpApi(targetEmail, emailSubject, emailBody, emailHtml);
   if (smtpSent) {
     try {
-      await addDoc(collection(db, 'mail_logs'), {
+      await addDoc(collection(db, 'mail_logs'), sanitizeFirestoreData({
         to: targetEmail,
         subject: emailSubject,
         body: emailBody,
@@ -342,7 +432,7 @@ Hệ thống Quản lý Quỹ phòng Nasani
         statusTx: payload.status,
         createdAt: Timestamp.now(),
         status: 'delivered_smtp'
-      });
+      }));
     } catch { }
 
     return {
@@ -354,7 +444,7 @@ Hệ thống Quản lý Quỹ phòng Nasani
 
   // 2. Lưu bản ghi vào Firestore mail_logs & mail
   try {
-    await addDoc(collection(db, 'mail_logs'), {
+    await addDoc(collection(db, 'mail_logs'), sanitizeFirestoreData({
       to: targetEmail,
       subject: emailSubject,
       body: emailBody,
@@ -364,13 +454,13 @@ Hệ thống Quản lý Quỹ phòng Nasani
       statusTx: payload.status,
       createdAt: Timestamp.now(),
       status: 'pending'
-    });
+    }));
   } catch (logErr) {
     console.warn('Lỗi ghi log mail_logs:', logErr);
   }
 
   try {
-    await addDoc(collection(db, 'mail'), {
+    await addDoc(collection(db, 'mail'), sanitizeFirestoreData({
       to: [targetEmail],
       message: {
         subject: emailSubject,
@@ -378,7 +468,7 @@ Hệ thống Quản lý Quỹ phòng Nasani
         html: emailHtml
       },
       createdAt: Timestamp.now()
-    });
+    }));
   } catch (mailErr) {
     console.warn('Lỗi ghi collection mail:', mailErr);
   }

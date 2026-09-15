@@ -218,14 +218,17 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       if (config.adminEmail) {
         try {
-          await sendPaymentEmailToAdmin(
-            config.adminEmail,
-            personName,
-            amountToPay,
-            transferContent,
-            affectedTxIds.length > 0 ? `${affectedTxIds.length} khoản nợ quỹ` : 'Đóng góp tự do',
-            config
-          );
+          await sendPaymentEmailToAdmin({
+            adminEmail: config.adminEmail || 'giabaoonutc2@gmail.com',
+            senderName: personName || 'Thành viên',
+            senderCode: (persons.find(p => p.id === personId)?.code) || '',
+            amount: amountToPay,
+            transferContent: transferContent || '',
+            bankName: config.bankName || '',
+            accountNumber: config.accountNumber || '',
+            transactionCount: affectedTxIds.length || 1,
+            timeString: new Date().toLocaleString('vi-VN')
+          }, config);
         } catch (mailErr) {
           console.warn('Gửi email thông báo cho Admin thất bại, nhưng thông báo Firestore đã gửi:', mailErr);
         }
